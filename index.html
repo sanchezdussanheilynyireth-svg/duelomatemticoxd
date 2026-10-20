@@ -1,0 +1,1449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Duelo Matemático Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Fredoka',system-ui,Arial,sans-serif;background:linear-gradient(135deg,#1e1b4b,#4c1d95 45%,#be185d);background-attachment:fixed;color:#f1f5f9;min-height:100vh;padding:16px}
+h1{text-align:center;font-size:clamp(2rem,6vw,3.2rem);color:#fff;text-shadow:0 4px 0 rgba(0,0,0,.25);margin-bottom:4px}
+h1 span{background:linear-gradient(90deg,#fde047,#fb923c,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+h3{margin:14px 0 8px}
+.sub{text-align:center;opacity:.9;margin-bottom:16px;font-size:1.1rem}
+.card{background:rgba(255,255,255,.12);backdrop-filter:blur(10px);border:2px solid rgba(255,255,255,.25);box-shadow:0 10px 30px rgba(0,0,0,.3);border-radius:22px;padding:18px;max-width:560px;margin:0 auto 14px}
+.hide{display:none!important}
+label{font-weight:600}
+input{padding:12px;border-radius:10px;font-size:1.1rem;width:100%;margin:4px 0 12px;background:#fff;color:#1e1b4b;font-weight:600;border:3px solid transparent;font-family:inherit}
+input:focus{outline:0;border-color:#fde047}
+.codeinput{text-align:center;letter-spacing:8px;font-size:1.8rem;text-transform:uppercase}
+.or{text-align:center;margin:16px 0 8px;opacity:.85}
+
+/* Botones */
+button{cursor:pointer;border:0;border-radius:10px;background:#334155;color:#fff;font-size:1rem;padding:12px;font-family:inherit;transition:transform .12s,box-shadow .12s;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+button:hover{transform:translateY(-2px)}
+button:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.grades{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:8px 0 14px}
+.grades.three{grid-template-columns:repeat(3,1fr)}
+.grades button{padding:12px 0;background:rgba(255,255,255,.2);font-weight:700;font-size:1.2rem}
+.grades button.sel{background:linear-gradient(135deg,#fde047,#fb923c);color:#422006;transform:scale(1.08)}
+.go{background:linear-gradient(135deg,#34d399,#10b981);color:#022c22;font-weight:700;width:100%;font-size:1.3rem;padding:14px;border-radius:16px}
+.go.join{background:linear-gradient(135deg,#60a5fa,#6366f1);color:#fff}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* Sala */
+.codebox{font-size:3.2rem;font-weight:700;letter-spacing:10px;background:#fff;color:#3b0764;border-radius:16px;padding:8px 8px 8px 18px;margin:8px 0 12px;box-shadow:0 0 0 4px #fde047}
+.plist{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+.plist span,.chip{background:rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-weight:600}
+.plist span.me,.chip.me{background:#fde047;color:#422006}
+
+/* Marcador */
+.board{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{display:flex;gap:8px;align-items:center;font-size:.95rem}
+.chip span{background:rgba(0,0,0,.3);border-radius:12px;padding:0 8px}
+.chip.me span{background:rgba(0,0,0,.15)}
+
+/* Pandita */
+.mascot{display:flex;align-items:center;gap:12px;margin:10px 0 2px}
+#panda{font-size:56px;line-height:1;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35));display:inline-block}
+#panda.idle{animation:bob 2s ease-in-out infinite}
+#panda.happy{animation:jump .8s ease 2}
+#panda.sad{animation:shake .6s ease}
+#bubble{position:relative;background:#fff;color:#3b0764;font-weight:700;padding:10px 16px;border-radius:18px;flex:1;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+#bubble::before{content:'';position:absolute;left:-10px;top:50%;margin-top:-8px;border:8px solid transparent;border-right-color:#fff;border-left:0}
+@keyframes bob{50%{transform:translateY(-8px) rotate(-4deg)}}
+@keyframes jump{0%,100%{transform:translateY(0)}40%{transform:translateY(-28px) rotate(-12deg) scale(1.15)}70%{transform:translateY(-6px) rotate(8deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.pandaEnd{font-size:1.3rem;font-weight:600;margin-bottom:6px}
+#hintBtn{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422006;font-weight:700;white-space:nowrap}
+
+/* Pregunta */
+.q{font-size:clamp(1.4rem,4vw,2rem);text-align:center;padding:16px 8px;font-weight:700;background:linear-gradient(135deg,#fff,#fef9c3);color:#3b0764;border-radius:18px;margin:10px 0 12px;box-shadow:0 0 0 4px #fde047,0 8px 24px rgba(0,0,0,.3);animation:qin .4s}
+@keyframes qin{from{transform:scale(.8);opacity:0}}
+.bar{height:14px;background:rgba(0,0,0,.35);border-radius:10px;overflow:hidden}
+.bar div{height:100%;width:100%;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6)}
+.msg{text-align:center;min-height:26px;margin-top:8px;font-weight:600;font-size:1.1rem}
+
+/* Calculadora */
+.calc{max-width:560px;margin:0 auto;border-radius:22px;padding:12px;border:4px solid #7dd3fc;background:linear-gradient(160deg,#0ea5e9,#4338ca);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.calc.lock{opacity:.45;pointer-events:none}
+.disp{background:#052e16;color:#86efac;font-family:'Courier New',monospace;border:3px solid rgba(0,0,0,.4);box-shadow:inset 0 3px 10px #000;border-radius:8px;padding:12px;text-align:right;font-size:1.5rem;min-height:52px;overflow-x:auto;white-space:nowrap}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:8px 0}
+.keys button{padding:14px 0;font-size:1.15rem;background:rgba(255,255,255,.92);color:#1e1b4b;font-weight:700}
+.keys button:nth-child(4n){background:#fb923c;color:#fff}
+.keys button:nth-child(-n+2){background:#f87171;color:#fff}
+.keys button:nth-child(19){background:#34d399;color:#022c22}
+.send{width:100%;background:linear-gradient(135deg,#fde047,#f59e0b);color:#422006;font-weight:700}
+
+/* Opciones A, B, C */
+.abc{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0}
+.abc button{padding:22px 4px;font-size:1.3rem;font-weight:700;color:#fff}
+.abc button:nth-child(1){background:#f97316}
+.abc button:nth-child(2){background:#eab308;color:#422006}
+.abc button:nth-child(3){background:#22c55e}
+.abc button:hover{filter:brightness(1.15)}
+
+/* Final con trofeo */
+#winner{font-size:1.7rem;color:#fde047}
+.trophy{font-size:100px;animation:pop 1s ease;filter:drop-shadow(0 0 25px #fde047)}
+@keyframes pop{0%{transform:scale(0) rotate(-30deg)}70%{transform:scale(1.3) rotate(10deg)}100%{transform:scale(1)}}
+#final{margin:10px 0 16px}
+.rank{display:flex;justify-content:space-between;gap:10px;background:rgba(255,255,255,.15);border-radius:12px;padding:8px 14px;margin:6px 0;font-size:1.15rem;text-align:left}
+.rank b{flex:1}
+.rank.me{background:#fde047;color:#422006}
+
+/* Fondo con símbolos */
+.bg{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.bg span{position:absolute;font-size:46px;opacity:.15;animation:float 12s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-30px) rotate(20deg)}}
+
+@media(max-width:640px){
+  .grades{grid-template-columns:repeat(3,1fr)}
+  #panda{font-size:44px}
+  .codebox{font-size:2.6rem}
+}
+
+/* Personajes e invitación */
+.chars{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:8px 0 14px}
+.chars button{padding:8px 0;font-size:1.7rem;line-height:1.2;background:rgba(255,255,255,.2)}
+.chars button.sel{background:linear-gradient(135deg,#fde047,#fb923c);transform:scale(1.1)}
+.chars button:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.plist span i{font-style:normal;margin-right:6px}
+.invite{background:#fde047;color:#422006;font-weight:700;border-radius:14px;padding:10px 14px;margin-bottom:12px;text-align:center}
+.linkbtn{background:none;box-shadow:none;text-decoration:underline;width:100%;margin-top:8px;opacity:.85}
+#shareLink{margin-left:6px}
+
+.qrbox{margin:14px 0 4px}
+#qr{display:inline-block;background:#fff;padding:10px;border-radius:14px;box-shadow:0 0 0 4px #fde047;line-height:0}
+.qrtxt{margin-top:10px;font-weight:600}
+
+/* Podio: ganador bailando y panda entregando el trofeo */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;min-height:140px;margin:6px 0 10px;overflow:hidden}
+.winAv{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;line-height:1}
+.winAv span{display:inline-block;filter:drop-shadow(0 0 18px #fde047)}
+.podium .trophy{font-size:68px;animation:none;opacity:0}
+.giver{font-size:68px;line-height:1;display:inline-block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.podium.go .winAv span{animation:dance .7s ease-in-out infinite}
+.podium.go .winAv span:nth-child(even){animation-delay:-.35s}
+.podium.go .giver{animation:giverIn 1.2s ease-out both}
+.podium.go .trophy{animation:trophyIn 1.3s ease-out .7s both}
+@keyframes dance{0%,100%{transform:translateY(0) rotate(-12deg)}25%{transform:translateY(-18px) rotate(0) scale(1.1)}50%{transform:translateY(0) rotate(12deg)}75%{transform:translateY(-18px) rotate(0) scale(1.1)}}
+@keyframes giverIn{0%{transform:translateX(170px)}55%{transform:translateX(0)}75%{transform:translateX(-12px) rotate(-16deg)}100%{transform:translateX(0) rotate(0)}}
+@keyframes trophyIn{0%{transform:translateX(100px) scale(.3);opacity:0}60%{transform:translateY(-26px) scale(1.35);opacity:1}100%{transform:none;opacity:1}}
+
+/* Música, sonidos y Panda entrenador */
+.mute{position:fixed;top:10px;right:10px;z-index:300;padding:6px 12px;font-size:1.3rem;border-radius:50%;background:rgba(0,0,0,.4);box-shadow:none}
+.tipbtn{width:100%;margin:0 0 10px;background:linear-gradient(135deg,#fde047,#f59e0b);color:#422006;font-weight:700}
+.coach{position:fixed;inset:0;z-index:200;display:flex;align-items:center;justify-content:center;padding:14px;background:rgba(20,10,50,.75);backdrop-filter:blur(4px)}
+.coachBox{width:100%;max-width:520px;max-height:94vh;overflow-y:auto;background:#fff;color:#3b0764;border-radius:26px;padding:16px 16px 18px;text-align:center;box-shadow:0 0 0 5px #fde047,0 20px 60px rgba(0,0,0,.55);animation:coachIn .55s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes coachIn{from{transform:scale(.3) translateY(60px);opacity:0}}
+.coachPanda{font-size:84px;line-height:1;display:inline-block;filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+.coachPanda.idle{animation:bob 2s ease-in-out infinite}
+.coachPanda.happy{animation:jump .8s ease 3}
+.coachBubble{position:relative;background:#fef9c3;border-radius:18px;padding:12px 14px;margin:12px 0 10px;text-align:left}
+.coachBubble::before{content:'';position:absolute;left:50%;top:-10px;margin-left:-10px;border:10px solid transparent;border-bottom-color:#fef9c3;border-top:0}
+.coachBubble h3{margin:0 0 4px;text-align:center;font-size:1.3rem}
+.coachSum{text-align:center;font-weight:600;margin-bottom:8px}
+.coachList{max-height:34vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.err{background:#fff;border-left:6px solid #f87171;border-radius:10px;padding:8px 10px;font-size:.95rem;line-height:1.35}
+.errQ{font-weight:700;margin-bottom:2px}
+.errTip{margin-top:3px;color:#4c1d95}
+.coachTip{margin-top:10px;font-weight:600}
+.coachMoti{margin:4px 0 14px;font-weight:700;font-size:1.1rem;color:#be185d}
+
+/* ===== LOOK SÚPER ARCADE ===== */
+body{background:#0b0620;overflow-x:hidden}
+body::before,body::after{content:'';position:fixed;z-index:-2;width:70vmax;height:70vmax;border-radius:50%;filter:blur(90px);opacity:.55;animation:aur 18s ease-in-out infinite alternate;pointer-events:none}
+body::before{background:#7c3aed;left:-25vmax;top:-25vmax}
+body::after{background:#db2777;right:-25vmax;bottom:-25vmax;animation-delay:-9s}
+@keyframes aur{to{transform:translate(12vmax,8vmax) scale(1.2)}}
+.star{position:fixed;z-index:-1;width:3px;height:3px;border-radius:50%;background:#fff;animation:tw 3s ease-in-out infinite;pointer-events:none}
+@keyframes tw{50%{opacity:.1;transform:scale(.4)}}
+h1{font-size:clamp(2.2rem,7vw,3.6rem);animation:titleIn .8s cubic-bezier(.2,1.5,.4,1);text-shadow:0 0 18px #a78bfa,0 4px 0 rgba(0,0,0,.35)}
+@keyframes titleIn{from{transform:scale(.3) rotate(-8deg);opacity:0}}
+h1 span{background-size:200% 100%;animation:shine 3s linear infinite;filter:drop-shadow(0 0 12px #fb923c)}
+@keyframes shine{to{background-position:200% 0}}
+.card{background:linear-gradient(#2a1768,#1d1050) padding-box,linear-gradient(120deg,#22d3ee,#a78bfa,#f472b6,#fde047,#22d3ee) border-box;background-size:auto,300% 100%;border:3px solid transparent;animation:cardIn .5s cubic-bezier(.2,1.3,.4,1),glow 6s linear infinite;box-shadow:0 0 30px rgba(167,139,250,.35),0 10px 30px rgba(0,0,0,.4)}
+@keyframes cardIn{from{transform:translateY(30px) scale(.94);opacity:0}}
+@keyframes glow{to{background-position:0 0,300% 0}}
+button{background:linear-gradient(#475569,#334155);box-shadow:0 4px 0 rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.25)}
+.go{animation:pulse 1.8s ease-in-out infinite;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+@keyframes pulse{50%{box-shadow:0 4px 0 rgba(0,0,0,.3),0 0 26px #34d399}}
+.abc button{border-radius:16px;box-shadow:0 6px 0 rgba(0,0,0,.35),inset 0 3px 0 rgba(255,255,255,.35);text-shadow:0 2px 0 rgba(0,0,0,.25)}
+.abc button:hover{transform:translateY(-4px) scale(1.04)}
+.q{box-shadow:0 0 0 4px #fde047,0 0 40px rgba(253,224,71,.6),0 8px 24px rgba(0,0,0,.4);animation:qin .5s cubic-bezier(.2,1.5,.4,1)}
+.bar{height:18px;border:2px solid rgba(255,255,255,.3);box-shadow:inset 0 2px 6px #000}
+.bar div{transition:width .1s linear}
+.bar.low div{background:linear-gradient(90deg,#fbbf24,#f97316)}
+.bar.crit div{background:linear-gradient(90deg,#ef4444,#f43f5e);animation:blink .5s infinite}
+@keyframes blink{50%{filter:brightness(1.7)}}
+#tnum{background:#fde047;color:#422006;border-radius:20px;padding:2px 14px;font-weight:700;box-shadow:0 0 14px rgba(253,224,71,.6)}
+.chip.pop{animation:popc .6s}
+@keyframes popc{40%{transform:scale(1.3);box-shadow:0 0 20px #fde047}}
+#panda{filter:drop-shadow(0 0 14px rgba(253,224,71,.6)) drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.calc{box-shadow:0 0 30px rgba(14,165,233,.5),0 10px 30px rgba(0,0,0,.4)}
+.flash{position:fixed;inset:0;z-index:150;pointer-events:none;animation:fl .6s forwards}
+@keyframes fl{from{opacity:1}to{opacity:0}}
+#count{position:fixed;inset:0;z-index:250;display:flex;align-items:center;justify-content:center;background:rgba(11,6,32,.88);font-size:min(40vw,240px);font-weight:700;color:#fde047;text-shadow:0 0 40px #f472b6}
+#count b{animation:cnt .85s ease-out}
+@keyframes cnt{from{transform:scale(2.6);opacity:0}30%{opacity:1}}
+.podium{position:relative}
+.podium::before{content:'';position:absolute;inset:-60%;z-index:0;background:repeating-conic-gradient(rgba(253,224,71,.18) 0 10deg,transparent 10deg 20deg);animation:spin 14s linear infinite;pointer-events:none}
+.podium>*{position:relative;z-index:1}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+
+/* ===== SALA DE REPASO ===== */
+.coachProg{display:flex;gap:6px;justify-content:center;margin:8px 0}
+.coachProg i{width:30px;height:8px;border-radius:6px;background:#ddd6fe}
+.coachProg i.on{background:#be185d}
+.coachProg i.ok{background:#22c55e}
+.bigQ{font-size:1.5rem;font-weight:700;background:#fef9c3;border-radius:14px;padding:12px;margin:8px 0}
+.ans{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:8px 0}
+.ans div{border-radius:12px;padding:8px 14px;font-weight:700}
+.ans .bad{background:#fee2e2;color:#991b1b}
+.ans .good{background:#dcfce7;color:#166534}
+.tag{display:inline-block;background:#be185d;color:#fff;border-radius:20px;padding:2px 12px;font-size:.9rem;font-weight:700;margin:2px 2px 4px}
+.why{text-align:left;background:#fff7ed;border-left:6px solid #fb923c;border-radius:10px;padding:10px 12px;margin:8px 0;line-height:1.4}
+.stp{text-align:left;background:#ede9fe;border-radius:12px;padding:10px 12px;margin:6px 0;animation:qin .4s;line-height:1.4}
+.stp b{background:#7c3aed;color:#fff;border-radius:50%;display:inline-block;width:26px;height:26px;text-align:center;line-height:26px;margin-right:8px}
+.coachBox input{margin:8px 0;text-align:center;border:3px solid #c4b5fd;background:#f5f3ff}
+.coachBox .go{margin-top:8px}
+.coachBox .ghost{background:#ede9fe;color:#4c1d95;box-shadow:none;width:100%;margin-top:8px;animation:none}
+.coachMsg{font-weight:700;min-height:24px;color:#be185d;line-height:1.35}
+.big{font-size:3.4rem;line-height:1.1}
+
+/* ===== CIERRE: INSTITUCIÓN EDUCATIVA ===== */
+.sello{position:relative;max-width:560px;margin:22px auto 8px;padding:22px 16px 20px;text-align:center;border-radius:26px;border:3px solid transparent;background:linear-gradient(#2a1768,#14093d) padding-box,linear-gradient(120deg,#fde047,#f472b6,#22d3ee,#fde047) border-box;background-size:auto,300% 100%;animation:glow 5s linear infinite;box-shadow:0 0 40px rgba(253,224,71,.35),0 10px 30px rgba(0,0,0,.45);overflow:hidden}
+.sello::before{content:'';position:absolute;inset:-80%;z-index:0;background:repeating-conic-gradient(rgba(253,224,71,.12) 0 10deg,transparent 10deg 20deg);animation:spin 20s linear infinite;pointer-events:none}
+.sello>*{position:relative;z-index:1}
+.sello img{display:block;margin:0 auto 10px;width:112px;height:auto;background:#fff;border-radius:22px;padding:8px;box-shadow:0 0 0 4px #fde047,0 0 34px rgba(253,224,71,.8);animation:floaty 3s ease-in-out infinite}
+@keyframes floaty{50%{transform:translateY(-8px) rotate(-3deg) scale(1.04)}}
+.sello .ie{font-size:1.05rem;font-weight:600;color:#e9d5ff;letter-spacing:1px}
+.sello .nom{font-size:clamp(1.7rem,6.5vw,2.4rem);font-weight:700;line-height:1.1;margin:2px 0 6px;background:linear-gradient(90deg,#fde047,#fb923c,#f472b6,#fde047);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 3s linear infinite;filter:drop-shadow(0 0 10px rgba(251,146,60,.6))}
+.sello .lema{display:inline-block;background:#fde047;color:#422006;font-weight:700;border-radius:20px;padding:4px 16px;margin-top:4px}
+.sello .gr{margin-top:10px;font-weight:600;opacity:.92}
+.sello .sp{position:absolute;z-index:1;animation:tw 2.4s ease-in-out infinite;font-size:22px}
+.closing{position:fixed;inset:0;z-index:220;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;background:rgba(11,6,32,.94);overflow-y:auto}
+.closing .sello{width:100%;margin:0;animation:glow 5s linear infinite,coachIn .7s cubic-bezier(.2,1.4,.4,1) both}
+.closing .sello img{width:150px}
+.closing .sello .nom{font-size:clamp(2rem,8vw,3rem)}
+.closing .go{max-width:560px;margin-top:16px}
+.how{background:rgba(253,224,71,.12);border:2px dashed #fde047;border-radius:16px;padding:10px 14px 8px;margin:0 0 14px}
+.how h3{margin:0 0 6px;color:#fde047;text-align:center}
+.how ol{list-style:none;counter-reset:p;display:flex;flex-direction:column;gap:6px}
+.how li{counter-increment:p;position:relative;padding-left:34px;line-height:1.35;font-size:.98rem}
+.how li::before{content:counter(p);position:absolute;left:0;top:0;width:25px;height:25px;border-radius:50%;background:linear-gradient(135deg,#fde047,#fb923c);color:#422006;font-weight:700;text-align:center;line-height:25px}
+.welcome{position:fixed;inset:0;z-index:260;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;background:radial-gradient(circle at 50% 42%,#5b21b6,#0b0620 72%);cursor:pointer;text-align:center;padding:16px;transition:opacity .6s,transform .6s}
+.welcome.out{opacity:0;transform:scale(1.4);pointer-events:none}
+.wWrap{position:relative;display:flex;align-items:center;justify-content:center;margin:6px 0}
+.wWrap::before,.wWrap::after{content:'';position:absolute;width:min(62vw,300px);height:min(62vw,300px);border-radius:50%;border:4px solid rgba(253,224,71,.6);animation:ring 2.4s ease-out infinite}
+.wWrap::after{animation-delay:-1.2s}
+@keyframes ring{from{transform:scale(.7);opacity:1}to{transform:scale(1.5);opacity:0}}
+#wPanda{position:relative;font-size:min(50vw,250px);line-height:1;display:inline-block;filter:drop-shadow(0 0 40px rgba(253,224,71,.75));animation:bob 2s ease-in-out infinite}
+#wPanda.jump{animation:jump .8s ease}
+.wTap{font-size:clamp(1.2rem,5vw,1.9rem);font-weight:700;color:#fde047;animation:pulseT 1.2s ease-in-out infinite;text-shadow:0 0 20px #f472b6;max-width:480px}
+@keyframes pulseT{50%{transform:scale(1.08)}}
+</style>
+</head>
+<body>
+  <h1>🧮 Duelo <span>Matemático</span> ✨</h1>
+  <p class="sub">¡Crea una sala, comparte el código y compite con tus amigos! 🏆</p>
+
+  <!-- 1. Inicio -->
+  <div class="card" id="home">
+    <p id="invite" class="invite hide"></p>
+    <div class="how">
+      <h3>🎯 ¿Cómo se juega?</h3>
+      <ol>
+        <li><b>Crea una sala</b> y comparte el código, o <b>únete</b> con el código de tu amigo.</li>
+        <li>Todos ven el <b>mismo problema</b> de matemáticas. ¡El más rápido en acertar gana <b>1 punto</b>! ⚡</li>
+        <li>Elige <b>A, B o C</b> (o usa la calculadora). Si fallas, esperas 3 segundos. Toca <b>💡 Pista</b> si necesitas ayuda.</li>
+        <li>Al final, <b>Panda te explica tus errores</b> y practicas para corregirlos. 🐼</li>
+      </ol>
+    </div>
+    <label for="name">Tu nombre</label>
+    <input id="name" maxlength="14" placeholder="Ej: Sofía">
+    <label>Elige tu personaje</label>
+    <div class="chars" id="homeChars"></div>
+    <button class="go" id="create">🎮 Crear sala</button>
+    <div class="or" id="orSep">— o únete a una sala —</div>
+    <input id="code" class="codeinput" maxlength="4" placeholder="CÓDIGO" autocapitalize="characters" autocomplete="off">
+    <button class="go join" id="join">🚀 Unirme</button>
+    <button class="linkbtn hide" id="ownRoom">Crear mi propia sala</button>
+    <p id="homeMsg" class="msg"></p>
+  </div>
+
+  <!-- 2. Sala de espera -->
+  <div class="card hide" id="lobby" style="text-align:center">
+    <p>Código de la sala</p>
+    <div class="codebox" id="roomCode">----</div>
+    <button id="copyLink">🔗 Copiar enlace para invitar</button>
+    <button id="shareLink" class="hide">📤 Compartir</button>
+    <div class="qrbox hide" id="qrbox"><div id="qr"></div><p class="qrtxt">📱 Escanea con la cámara para entrar a la sala</p></div>
+    <h3>Jugadores en la sala</h3>
+    <div class="plist" id="plist"></div>
+    <h3>Elige tu personaje</h3>
+    <div class="chars" id="lobbyChars"></div>
+    <div id="hostOpts">
+      <label>Elige el grado</label>
+      <div class="grades" id="grades"></div>
+      <label>Número de problemas</label>
+      <div class="grades three" id="rounds"></div>
+      <button class="go" id="start">¡Empezar!</button>
+    </div>
+    <p id="waitMsg" class="msg hide">Esperando a que el anfitrión empiece… 🐼</p>
+  </div>
+
+  <!-- 3. Juego -->
+  <div id="game" class="hide">
+    <div class="card">
+      <div class="top"><b id="gInfo"></b><span id="tnum">60</span></div>
+      <div class="board" id="board"></div>
+      <div class="mascot">
+        <div id="panda" class="idle">🐼</div>
+        <div id="bubble">¡Hola! Soy Panda 🐼</div>
+        <button id="hintBtn">💡 Pista</button>
+      </div>
+      <div class="q" id="q"></div>
+      <div class="bar" id="bar"><div id="tb"></div></div>
+      <div class="msg" id="msg"></div>
+    </div>
+    <div class="calc" id="calc">
+      <div class="disp" id="disp">0</div>
+      <div class="abc hide" id="abc"></div>
+      <div class="keys" id="keys"></div>
+      <button class="send" id="send">Enviar respuesta</button>
+    </div>
+  </div>
+
+  <!-- 4. Final -->
+  <div class="card hide" id="end" style="text-align:center">
+    <div class="podium" id="podium">
+      <div class="winAv" id="winAv"></div>
+      <div class="trophy" id="trophy">🏆</div>
+      <div class="giver" id="giver">🐼</div>
+    </div>
+    <h2 id="winner"></h2>
+    <p id="pandaEnd" class="pandaEnd"></p>
+    <div id="final"></div>
+    <button class="tipbtn" id="coachBtn">🐼 Repasar mis errores con Panda</button>
+    <button class="go" id="again">Jugar otra vez</button>
+    <p id="endWait" class="msg hide">Esperando al anfitrión… 🐼</p>
+  <div class="sello" id="sello">
+    <span class="sp" style="left:8%;top:14%">✨</span><span class="sp" style="right:9%;top:10%;animation-delay:-.8s">⭐</span>
+    <span class="sp" style="left:12%;bottom:12%;animation-delay:-1.4s">⭐</span><span class="sp" style="right:11%;bottom:14%;animation-delay:-.4s">✨</span>
+    <img src="data:image/gif;base64,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" alt="Escudo de la Institución Educativa Eugenio Ferro Falla">
+    <div class="ie">INSTITUCIÓN EDUCATIVA</div>
+    <div class="nom">Eugenio Ferro Falla</div>
+    <div class="lema">Ciencia y Virtud</div>
+    <div class="gr">¡Gracias por jugar y aprender con nosotros! 🏆</div>
+  </div>
+  </div>
+
+  <button id="muteBtn" class="mute" title="Sonido y música" aria-label="Sonido y música">🔊</button>
+
+  <!-- Panda en el centro: explica los errores al final -->
+  <div id="coach" class="coach hide" role="dialog" aria-modal="true" aria-labelledby="coachTitle">
+    <div class="coachBox">
+      <div id="coachPanda" class="coachPanda idle">🐼</div>
+      <div class="coachProg" id="coachProg"></div>
+      <div id="coachBody"></div>
+    </div>
+  </div>
+
+  <div id="welcome" class="welcome" role="button" tabindex="0" aria-label="Toca a Panda para empezar">
+    <h1>🧮 Duelo <span>Matemático</span> ✨</h1>
+    <div class="wWrap"><div id="wPanda">🐼</div></div>
+    <div class="wTap">👆 ¡Toca a Panda para unirte y empezar!</div>
+  </div>
+  <div id="count" class="hide"></div>
+  <div id="closing" class="closing hide"></div>
+  <div id="fx"></div>
+  <div class="bg">
+    <span style="left:4%;top:12%">➕</span>
+    <span style="left:88%;top:8%;animation-delay:-3s">➗</span>
+    <span style="left:10%;top:70%;animation-delay:-5s">✖️</span>
+    <span style="left:80%;top:62%;animation-delay:-2s">➖</span>
+    <span style="left:46%;top:88%;animation-delay:-7s">π</span>
+    <span style="left:60%;top:20%;animation-delay:-4s">√</span>
+    <span style="left:28%;top:40%;animation-delay:-6s">%</span>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+/* ===================== DUELO MATEMÁTICO ONLINE =====================
+   - El anfitrión crea una sala y obtiene un código de 4 letras.
+   - Los demás escriben el código y se conectan (PeerJS / WebRTC).
+   - El anfitrión controla el juego; todos ven la misma pregunta.
+   - El más rápido en responder bien gana 1 punto.
+=================================================================== */
+
+const r = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const pick = a => a[r(0, a.length - 1)];
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+const TIME = 60;          // segundos por problema
+const PROB_ABC = 0.8;     // 80% con opciones A, B, C y 20% para calcular
+const MAX_PLAYERS = 8;    // jugadores máximos por sala
+const PREFIX = 'duelo-mate-';
+// Personajes para elegir (emoji, nombre)
+const AVATARS = [['🐼', 'Panda'], ['🦊', 'Zorro'], ['🐯', 'Tigre'], ['🦁', 'León'], ['🐸', 'Rana'], ['🐵', 'Mono'], ['🐙', 'Pulpo'], ['🦄', 'Unicornio'], ['🐶', 'Perro'], ['🐱', 'Gato'], ['🤖', 'Robot'], ['👽', 'Alien']];
+
+/* ---------------------- Problemas por grado (con solución paso a paso y errores típicos) ---------------------- */
+// G(pregunta, respuesta, pasos de la solución, [[valor del error típico, explicación], ...])
+const G = (q, a, s, w) => ({ q, a, s, w: w || [] });
+const GEN = {
+  6: [
+    () => { const a = r(10, 60), b = r(10, 40), da = a - a % 10, db = b - b % 10, u = a % 10 + b % 10; return G(`${a} + ${b}`, a + b, [`Separa decenas y unidades: ${a} = ${da} + ${a % 10} y ${b} = ${db} + ${b % 10}`, `Suma las decenas: ${da} + ${db} = ${da + db}`, `Suma las unidades: ${a % 10} + ${b % 10} = ${u}`, `Junta todo: ${da + db} + ${u} = ${a + b}`], u > 9 ? [[a + b - 10, 'Se te olvidó "llevar": las unidades sumaron más de 9 y esa decena extra hay que sumarla.']] : []) },
+    () => { const a = r(30, 90), b = r(5, 29), db = b - b % 10, ub = b % 10, ua = a % 10; return G(`${a} − ${b}`, a - b, [`Quita primero las decenas de ${b}: ${a} − ${db} = ${a - db}`, `Ahora quita las unidades: ${a - db} − ${ub} = ${a - b}`], [[a + b, 'Sumaste en vez de restar. Mira bien el signo −.'], ...(ua < ub ? [[a - ua - db + ub - ua, 'Restaste la unidad pequeña de la grande (al revés). Cuando no alcanza hay que "pedir prestado" una decena.']] : [])]) },
+    () => { const a = r(2, 10), b = r(2, 10); return G(`${a} × ${b}`, a * b, [`${a} × ${b} significa ${b} grupos de ${a}`, `Usa una cuenta vecina: ${a} × ${b - 1} = ${a * (b - 1)}`, `Suma un grupo más: ${a * (b - 1)} + ${a} = ${a * b}`], [[a + b, 'Sumaste en vez de multiplicar: × significa grupos iguales.']]) },
+    () => { const a = r(2, 10), b = r(2, 10); return G(`${a * b} ÷ ${b}`, a, [`Pregúntate: ¿qué número multiplicado por ${b} da ${a * b}?`, `${a} × ${b} = ${a * b}`, `Entonces ${a * b} ÷ ${b} = ${a}`], [[b, `Diste el divisor. La respuesta es cuántas veces cabe ${b} en ${a * b}.`]]) },
+    () => { const a = r(1, 9), b = r(1, 9); return G(`${a}.5 + ${b}.5`, a + b + 1, [`Suma los enteros: ${a} + ${b} = ${a + b}`, `Junta los decimales: 0.5 + 0.5 = 1`, `Total: ${a + b} + 1 = ${a + b + 1}`], [[a + b, 'Olvidaste que 0.5 + 0.5 forman 1 entero.']]) },
+    () => { const n = 4 * r(2, 10); return G(`La mitad de ${n}`, n / 2, [`La mitad es dividir entre 2`, `${n} ÷ 2 = ${n / 2}`], [[n * 2, 'Duplicaste en vez de partir en dos.']]) },
+    () => { const n = 4 * r(2, 10); return G(`¿Cuánto es 1/4 de ${n}?`, n / 4, [`Un cuarto es dividir en 4 partes iguales`, `${n} ÷ 4 = ${n / 4}`, `Truco: la mitad de la mitad: ${n} → ${n / 2} → ${n / 4}`], [[n / 2, 'Eso es 1/2 (la mitad). Un cuarto es todavía más pequeño.'], [n * 4, 'Multiplicaste; para sacar una parte hay que dividir.']]) },
+    () => { const a = r(2, 15), b = r(2, 15); return G(`Perímetro de un rectángulo de ${a} por ${b}`, 2 * (a + b), [`El perímetro es la suma de los 4 lados: ${a} + ${b} + ${a} + ${b}`, `Atajo: 2 × (${a} + ${b}) = 2 × ${a + b}`, `Resultado: ${2 * (a + b)}`], [[a * b, 'Esa cuenta (largo × ancho) es el ÁREA. El perímetro suma los lados.'], [a + b, 'Solo sumaste 2 lados; el rectángulo tiene 4.']]) },
+    () => { const a = r(2, 12), b = r(2, 12); return G(`Área de un rectángulo de ${a} por ${b}`, a * b, [`Área = largo × ancho`, `${a} × ${b} = ${a * b}`], [[2 * (a + b), 'Eso es el PERÍMETRO (suma de los lados). El área multiplica largo × ancho.'], [a + b, 'Sumaste; para el área se multiplica.']]) }
+  ],
+  7: [
+    () => { const a = r(1, 9), b = r(1, 15); return G(`(−${a}) + ${b}`, b - a, [`Empieza en −${a} en la recta numérica`, `Sumar ${b} es avanzar ${b} pasos a la derecha`, `Llegas a ${b - a}`], [[-(a + b), 'Sumaste como si los dos números fueran negativos.'], [a + b, `Ignoraste el signo negativo del ${a}.`]]) },
+    () => { const a = r(1, 9), b = r(1, 9); return G(`(−${a}) × ${b}`, -a * b, [`Regla de signos: negativo × positivo = negativo`, `Multiplica los números: ${a} × ${b} = ${a * b}`, `Pon el signo: −${a * b}`], [[a * b, 'Se te olvidó el signo: negativo × positivo da NEGATIVO.']]) },
+    () => { const a = r(5, 20), b = r(1, 9); return G(`${a} − (−${b})`, a + b, [`Menos por menos es más: − (−${b}) se convierte en + ${b}`, `${a} + ${b} = ${a + b}`], [[a - b, 'Restaste normal. Pero restar un número negativo es sumar.']]) },
+    () => { const x = r(1, 20), a = r(1, 20); return G(`x + ${a} = ${x + a}. ¿Cuánto vale x?`, x, [`Quita ${a} en los dos lados (la operación contraria de sumar)`, `x = ${x + a} − ${a}`, `x = ${x}`], [[x + 2 * a, `Sumaste ${a} otra vez. Para despejar hay que RESTAR.`]]) },
+    () => { const x = r(2, 12), a = r(2, 9); return G(`${a}x = ${a * x}. ¿Cuánto vale x?`, x, [`${a}x significa ${a} × x. La operación contraria es dividir`, `x = ${a * x} ÷ ${a}`, `x = ${x}`], [[a * a * x, `Multiplicaste; para despejar hay que DIVIDIR entre ${a}.`]]) },
+    () => { const p = r(2, 9) * 1000, n = r(2, 4), m = r(5, 9); return G(`${n} cuadernos cuestan $${p * n}. ¿Cuánto cuestan ${m}?`, p * m, [`Halla el precio de UNO: $${p * n} ÷ ${n} = $${p}`, `Multiplica por ${m}: ${p} × ${m} = $${p * m}`], [[p * n * m, `Multiplicaste el total por ${m}. Primero hay que hallar el precio de uno.`], [p, `Ese es el precio de uno; faltaba multiplicar por ${m}.`]]) },
+    () => { const n = 10 * r(1, 20); return G(`El 10% de ${n}`, n / 10, [`10% = 10 de cada 100 = dividir entre 10`, `${n} ÷ 10 = ${n / 10}`], [[n / 2, 'Eso es el 50%.'], [n * 10, 'Multiplicaste; el 10% es una parte pequeña (÷ 10).']]) },
+    () => { const n = 2 * r(5, 40); return G(`El 50% de ${n}`, n / 2, [`50% es la mitad`, `${n} ÷ 2 = ${n / 2}`], [[n / 10, 'Eso es el 10%.'], [n * 2, 'Duplicaste; el 50% es la mitad.']]) },
+    () => { const m = r(5, 20), d = r(1, 3); return G(`Promedio de ${m - d}, ${m} y ${m + d}`, m, [`Suma todos: ${m - d} + ${m} + ${m + d} = ${3 * m}`, `Divide entre cuántos son (3): ${3 * m} ÷ 3 = ${m}`], [[3 * m, 'Olvidaste dividir entre 3 al final.']]) }
+  ],
+  8: [
+    () => { const b = r(2, 9); return G(`${b}²`, b * b, [`${b}² significa ${b} × ${b}`, `${b} × ${b} = ${b * b}`], [[2 * b, `Calculaste ${b} × 2. El 2 pequeño dice cuántas veces escribes el ${b}: ${b} × ${b}.`]]) },
+    () => { const b = r(2, 4); return G(`${b}³`, b ** 3, [`${b}³ significa ${b} × ${b} × ${b}`, `${b} × ${b} = ${b * b}`, `${b * b} × ${b} = ${b ** 3}`], [[3 * b, `Calculaste ${b} × 3. El 3 pequeño dice cuántas veces escribes el ${b}.`], [b * b, 'Eso es el cuadrado. En el cubo se multiplica TRES veces.']]) },
+    () => { const n = r(2, 12); return G(`√${n * n}`, n, [`La raíz pregunta: ¿qué número por sí mismo da ${n * n}?`, `${n} × ${n} = ${n * n}`, `Entonces √${n * n} = ${n}`], [[n * n / 2, 'La raíz no es dividir entre 2.']]) },
+    () => { const x = r(1, 9), a = r(2, 5), b = r(1, 10); return G(`${a}x + ${b} = ${a * x + b}. ¿Cuánto vale x?`, x, [`Resta ${b} en los dos lados: ${a}x = ${a * x + b} − ${b} = ${a * x}`, `Divide entre ${a}: x = ${a * x} ÷ ${a} = ${x}`], [[a * x, `Ya restaste el ${b}, pero falta dividir entre ${a}.`], [(a * x + b) / a, `Dividiste antes de restar el ${b}. Primero se quita el número suelto.`]]) },
+    () => { const x = r(1, 9), a = r(1, 9); return G(`x − ${a} = ${x - a}. ¿Cuánto vale x?`, x, [`La operación contraria de restar es SUMAR: suma ${a} en los dos lados`, `x = ${x - a} + ${a}`, `x = ${x}`], [[x - 2 * a, `Restaste ${a} otra vez. Para despejar hay que SUMAR.`]]) },
+    () => { const a = r(2, 9), b = r(2, 9), c = r(2, 9); return G(`${a} + ${b} × ${c}`, a + b * c, [`Orden de las operaciones: primero × y ÷, después + y −`, `Multiplica: ${b} × ${c} = ${b * c}`, `Suma: ${a} + ${b * c} = ${a + b * c}`], [[(a + b) * c, 'Sumaste primero. Pero la multiplicación va antes que la suma.']]) },
+    () => { const t = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13]]), q = t[0] ** 2 + t[1] ** 2; return G(`Triángulo rectángulo con catetos ${t[0]} y ${t[1]}. ¿Cuánto mide la hipotenusa?`, t[2], [`Pitágoras: h² = cateto² + cateto²`, `h² = ${t[0]}² + ${t[1]}² = ${t[0] ** 2} + ${t[1] ** 2} = ${q}`, `h = √${q} = ${t[2]}`], [[q, 'Te faltó sacar la raíz cuadrada al final.'], [t[0] + t[1], 'Sumaste los catetos. Hay que elevarlos al cuadrado, sumar y sacar la raíz.']]) },
+    () => { const b = 2 * r(2, 10), h = r(2, 10); return G(`Área de un triángulo: base ${b}, altura ${h}`, b * h / 2, [`Área del triángulo = base × altura ÷ 2`, `${b} × ${h} = ${b * h}`, `${b * h} ÷ 2 = ${b * h / 2}`], [[b * h, 'Olvidaste dividir entre 2: el triángulo es la mitad de un rectángulo.']]) }
+  ],
+  9: [
+    () => { const a = r(1, 5), b = r(1, 9), k = r(1, 6); return G(`Si f(x) = ${a}x + ${b}, halla f(${k})`, a * k + b, [`Reemplaza x por ${k}: f(${k}) = ${a}·${k} + ${b}`, `${a} × ${k} = ${a * k}`, `${a * k} + ${b} = ${a * k + b}`], [[a * k, `Olvidaste sumar el ${b} del final.`], [(a + b) * k, `Multiplicaste el ${b} también por ${k}. Solo la x se reemplaza.`]]) },
+    () => { const n = r(2, 10); return G(`x² = ${n * n}, con x positivo. ¿Cuánto vale x?`, n, [`Pregunta: ¿qué número positivo por sí mismo da ${n * n}?`, `${n} × ${n} = ${n * n}`, `x = ${n}`], [[n * n, 'Ese es x². Te pedían x (la raíz).']]) },
+    () => { const x = r(2, 10), y = r(1, x - 1); return G(`x + y = ${x + y} y x − y = ${x - y}. ¿Cuánto vale x?`, x, [`Suma las dos ecuaciones: la y se cancela`, `2x = ${x + y} + ${x - y} = ${2 * x}`, `x = ${2 * x} ÷ 2 = ${x}`], [[2 * x, 'Falta dividir entre 2: queda 2x, no x.'], [y, 'Ese es y. Te pedían x.']]) },
+    () => { const m = r(1, 5), b = r(1, 9); return G(`En la recta y = ${m}x + ${b}, ¿cuál es la pendiente?`, m, [`En y = mx + b, la pendiente es m: el número que multiplica a x`, `Aquí el que multiplica a x es ${m}`], [[b, 'Ese es b (donde la recta corta el eje y). La pendiente es el número que acompaña a x.']]) },
+    () => { const m = r(1, 5), b = r(1, 9); return G(`En la recta y = ${m}x + ${b}, ¿cuánto vale y cuando x = 0?`, b, [`Reemplaza x por 0: y = ${m}·0 + ${b}`, `${m} × 0 = 0, entonces y = 0 + ${b} = ${b}`], [[m + b, `Con x = 0 el término ${m}x vale 0 y desaparece.`], [m, 'Esa es la pendiente, no el valor de y.']]) },
+    () => { const a = r(1, 9), d = r(2, 5), n = r(3, 8); return G(`Sucesión: empieza en ${a} y suma ${d} cada vez. ¿Cuál es el término ${n}?`, a + (n - 1) * d, [`Fórmula: primero + (n − 1) × lo que suma`, `${a} + (${n} − 1) × ${d} = ${a} + ${n - 1} × ${d}`, `${a} + ${(n - 1) * d} = ${a + (n - 1) * d}`], [[a + n * d, `Sumaste ${n} veces. El primer término ya está puesto: solo se suma ${n - 1} veces.`]]) },
+    () => { const a = r(2, 9), b = r(2, 9); return G(`(x + ${a})(x + ${b}) cuando x = 1`, (1 + a) * (1 + b), [`Reemplaza x por 1 en cada paréntesis: (1 + ${a})(1 + ${b})`, `= ${1 + a} × ${1 + b}`, `= ${(1 + a) * (1 + b)}`], [[a * b, 'Olvidaste sumar el x (=1) dentro de cada paréntesis.'], [2 + a + b, 'Sumaste los paréntesis; entre ellos hay multiplicación.']]) }
+  ],
+  10: [
+    () => { const T = { 'sen 30°': [.5, 'En el triángulo 30°-60°-90° el cateto opuesto a 30° es la mitad de la hipotenusa: sen 30° = 1/2 = 0.5'], 'cos 60°': [.5, 'cos 60° = sen 30° (ángulos complementarios) = 0.5'], 'tan 45°': [1, 'En 45° los dos catetos son iguales, así que tan = opuesto ÷ adyacente = 1'], 'sen 90°': [1, 'En 90° el cateto opuesto es igual a la hipotenusa: sen 90° = 1'], 'cos 0°': [1, 'En 0° el cateto adyacente es igual a la hipotenusa: cos 0° = 1'], 'cos 90°': [0, 'En 90° el cateto adyacente desaparece (mide 0): cos 90° = 0'] }, k = pick(Object.keys(T)); return G(`${k} =`, T[k][0], [T[k][1], 'Tip: memoriza la tabla de 0°, 30°, 45°, 60° y 90°'], [[1 - T[k][0], 'Confundiste este valor con el de otro ángulo de la tabla (por ejemplo cos 0° = 1 pero cos 90° = 0).']]) },
+    () => { const t = pick([[3, 5], [4, 5], [6, 10], [8, 10]]), c = Math.sqrt(t[1] ** 2 - t[0] ** 2); return G(`Cateto opuesto ${t[0]}, hipotenusa ${t[1]}. ¿Cuánto vale el seno del ángulo?`, t[0] / t[1], [`seno = cateto opuesto ÷ hipotenusa`, `${t[0]} ÷ ${t[1]} = ${t[0] / t[1]}`], [[c / t[1], 'Ese es el coseno (adyacente ÷ hipotenusa). El seno usa el cateto opuesto.'], [t[1] / t[0], 'Invertiste la división: es opuesto ÷ hipotenusa.']]) },
+    () => { const b = pick([2, 3, 10]), k = r(1, 4); return G(`log base ${b} de ${b ** k}`, k, [`El logaritmo pregunta: ¿a qué exponente elevo ${b} para obtener ${b ** k}?`, `${b}^${k} = ${b ** k}`, `Entonces el logaritmo vale ${k}`], [[b ** k, 'Ese es el número de adentro. La respuesta es el EXPONENTE.'], [b, 'Esa es la base. Busca el exponente.']]) },
+    () => { const a = r(1, 3), k = r(-3, 4); return G(`Si f(x) = ${a}x² + 1, halla f(${k})`, a * k * k + 1, [`Reemplaza x por ${k}: f(${k}) = ${a}·(${k})² + 1`, `Primero la potencia: (${k})² = ${k * k}${k < 0 ? ' (el cuadrado de un negativo es positivo)' : ''}`, `${a} × ${k * k} + 1 = ${a * k * k + 1}`], [[2 * a * k + 1, `Calculaste ${k} × 2 en vez de ${k}².`], ...(k < 0 ? [[1 - a * k * k, 'El cuadrado de un negativo es POSITIVO.']] : [])]) },
+    () => { const a = r(2, 9), k = r(2, 5); return G(`Si f(x) = ${a}·2^x, halla f(${k})`, a * 2 ** k, [`Reemplaza x por ${k}: ${a}·2^${k}`, `Primero la potencia: 2^${k} = ${2 ** k}`, `Luego multiplica: ${a} × ${2 ** k} = ${a * 2 ** k}`], [[(2 * a) ** k, `Multiplicaste ${a}·2 antes de elevar. La potencia solo afecta al 2.`], [2 * k * a, `2^${k} no es 2 × ${k}: es 2 multiplicado ${k} veces.`]]) },
+    () => { const n = r(3, 8); return G(`¿De cuántas formas se pueden elegir 2 personas entre ${n}?`, n * (n - 1) / 2, [`Fórmula: n × (n − 1) ÷ 2`, `${n} × ${n - 1} = ${n * (n - 1)}`, `${n * (n - 1)} ÷ 2 = ${n * (n - 1) / 2}`], [[n * (n - 1), 'Olvidaste dividir entre 2: la pareja A–B es la misma que B–A.']]) },
+    () => { const t = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13]]), q = t[0] ** 2 + t[1] ** 2; return G(`Catetos ${t[0]} y ${t[1]}. ¿Cuánto mide la hipotenusa?`, t[2], [`Pitágoras: h² = ${t[0]}² + ${t[1]}²`, `h² = ${t[0] ** 2} + ${t[1] ** 2} = ${q}`, `h = √${q} = ${t[2]}`], [[q, 'Te faltó sacar la raíz cuadrada.'], [t[0] + t[1], 'Sumaste los catetos sin elevarlos al cuadrado.']]) }
+  ],
+  11: [
+    () => { const a = r(1, 5), k = r(1, 5); return G(`Límite de x + ${a} cuando x → ${k}`, k + a, [`La función es continua: reemplaza x por ${k}`, `${k} + ${a} = ${k + a}`], [[a, `Solo tomaste el ${a}; la x también se reemplaza por ${k}.`]]) },
+    () => { const a = r(2, 9); return G(`Límite de (x² − ${a * a}) / (x − ${a}) cuando x → ${a}`, 2 * a, [`Si reemplazas x = ${a} queda 0/0: no sirve, hay que simplificar`, `Factoriza: x² − ${a * a} = (x − ${a})(x + ${a})`, `Cancela (x − ${a}): queda x + ${a}`, `Reemplaza x = ${a}: ${a} + ${a} = ${2 * a}`], [[0, 'Reemplazaste directo y te dio 0/0. Hay que factorizar y simplificar.']]) },
+    () => { const a = r(2, 9), b = r(1, 9); return G(`Derivada de ${a}x + ${b}`, a, [`La derivada de ${a}x es ${a}`, `La derivada de un número solo (${b}) es 0`, `Respuesta: ${a} + 0 = ${a}`], [[a + b, `La derivada de una constante (${b}) es 0: no se suma.`]]) },
+    () => { const k = r(1, 9); return G(`Derivada de x² evaluada en x = ${k}`, 2 * k, [`La derivada de x² es 2x`, `Evalúa en x = ${k}: 2 × ${k} = ${2 * k}`], [[k * k, 'Evaluaste x² en vez de su derivada 2x.']]) },
+    () => { const a = r(1, 5), k = r(1, 5); return G(`Derivada de ${a}x² evaluada en x = ${k}`, 2 * a * k, [`La derivada de ax² es 2ax (el exponente baja a multiplicar)`, `Aquí: 2 × ${a} × x = ${2 * a}x`, `Evalúa en x = ${k}: ${2 * a} × ${k} = ${2 * a * k}`], [[a * k * k, 'Evaluaste la función. Primero hay que derivar.'], [a * k, 'Falta el 2: el exponente baja multiplicando.']]) },
+    () => { const k = r(1, 4); return G(`∫ de 0 a ${k} de 2x dx`, k * k, [`La integral de 2x es x²`, `Arriba: ${k}² = ${k * k}. Abajo: 0² = 0`, `Resta: ${k * k} − 0 = ${k * k}`], [[2 * k, 'Eso sería derivar, no integrar.']]) },
+    () => { const k = r(1, 9); return G(`ln(e^${k}) =`, k, [`ln y e^ son operaciones opuestas: se cancelan`, `ln(e^${k}) = ${k}`], [[1, `ln e = 1, pero aquí el exponente es ${k}: baja y queda ${k}·1 = ${k}.`]]) },
+    () => { const n = r(3, 6), s = ['n! = n × (n−1) × ... × 1']; let acc = n; for (let i = n - 1; i >= 2; i--) { s.push(`${acc} × ${i} = ${acc * i}`); acc *= i; } return G(`${n}! (factorial de ${n})`, acc, s, [[n * (n - 1), 'Paraste muy pronto: hay que seguir multiplicando hasta llegar a 1.']]) }
+  ]
+};
+
+/* ---------------------- Frases y pistas del pandita ---------------------- */
+const MOTI = ['¡Tú puedes, confía en ti! 💪', '¡Equivocarse es aprender! 🌱', '¡Respira y piensa con calma! 🧘', '¡Cada problema te hace más fuerte! 🦾', '¡Los pandas nunca se rinden! 🐼', '¡Vas muy bien, sigue así! 🚀', '¡Eres más inteligente de lo que crees! 🧠', '¡Un paso a la vez! 👣'];
+const START = ['¡Tú puedes! 💪', '¡Piensa rápido! ⚡', '¡Concéntrate! 🎯', '¡Vamos, vamos! 🎋', '¡Esta está fácil! 😄', '¡Confío en ustedes! 🌟'];
+
+const HINTS = [
+  [/hipotenusa/, 'Usa Pitágoras: hipotenusa² = cateto² + cateto². Suma los cuadrados y saca la raíz 📐'],
+  [/seno del/, 'Seno = cateto opuesto ÷ hipotenusa'],
+  [/sen |cos |tan /, 'Recuerda: sen 30° = 0.5, cos 60° = 0.5, tan 45° = 1, sen 90° = 1, cos 0° = 1, cos 90° = 0'],
+  [/^log/, 'Pregúntate: ¿a qué número elevo la base para obtener ese resultado?'],
+  [/formas se pueden/, 'Usa n × (n − 1) ÷ 2, donde n es el total de personas'],
+  [/^Límite de \(/, 'Factoriza: x² − a² = (x − a)(x + a) y simplifica el (x − a)'],
+  [/^Límite/, 'Solo reemplaza x por el número al que se acerca'],
+  [/^Derivada de x²/, 'La derivada de x² es 2x'],
+  [/^Derivada de \d+x²/, 'La derivada de ax² es 2ax'],
+  [/^Derivada/, 'La derivada de ax + b es solo a'],
+  [/^∫/, 'La integral de 2x es x². Reemplázalo por el límite de arriba (el de abajo da 0)'],
+  [/^ln/, 'ln y e son opuestos: se cancelan y queda el exponente'],
+  [/factorial/, 'Multiplica todos los números desde el que te dan hasta 1'],
+  [/^Perímetro/, 'Perímetro = suma de todos los lados: 2 × (largo + ancho)'],
+  [/^Área de un rectángulo/, 'Área = largo × ancho'],
+  [/^Área de un triángulo/, 'Área = base × altura ÷ 2'],
+  [/cuadernos/, 'Halla primero cuánto cuesta 1 cuaderno y luego multiplícalo'],
+  [/^Promedio/, 'Suma todos los números y divide entre cuántos son'],
+  [/^El 10%/, 'El 10% es dividir entre 10'],
+  [/^El 50%/, 'El 50% es la mitad'],
+  [/^La mitad/, 'La mitad es dividir entre 2'],
+  [/1\/4/, 'Un cuarto es dividir entre 4'],
+  [/^Sucesión/, 'Término n = primero + (n − 1) × lo que suma cada vez'],
+  [/pendiente/, 'En y = mx + b, la pendiente es el número que acompaña a x'],
+  [/x = 0/, 'Reemplaza x por 0 y calcula'],
+  [/^\(x \+/, 'Reemplaza x por 1 y multiplica los dos paréntesis'],
+  [/2\^x/, 'Reemplaza x y calcula primero la potencia de 2'],
+  [/^Si f\(x\)/, 'Reemplaza x por el número que te dan y calcula'],
+  [/^x² =/, '¿Qué número multiplicado por sí mismo da ese resultado?'],
+  [/^x \+ y/, 'Suma las dos ecuaciones: queda 2x = la suma de los dos resultados'],
+  [/^\(−\d+\) \+/, 'Empieza en el número negativo y avanza hacia la derecha en la recta numérica'],
+  [/^\(−\d+\) ×/, 'Negativo por positivo da negativo'],
+  [/− \(−/, 'Menos por menos es más: se vuelve una suma'],
+  [/^x \+ \d+ =/, 'Resta ese número en los dos lados'],
+  [/^x − \d+ =/, 'Suma ese número en los dos lados'],
+  [/^\d+x \+ \d+ =/, 'Primero resta el número suelto y luego divide entre el que acompaña a x'],
+  [/^\d+x =/, 'Divide el resultado entre el número que acompaña a x'],
+  [/^\d+ \+ \d+ × \d+$/, '¡Primero la multiplicación y después la suma!'],
+  [/^\d+\.5/, 'Suma primero los enteros y luego junta los dos .5 (dan 1)'],
+  [/^\d+ \+ \d+$/, 'Suma primero las decenas y luego las unidades'],
+  [/^\d+ − \d+$/, 'Resta con calma: quita primero las decenas y luego las unidades'],
+  [/^\d+ × \d+$/, 'Piensa en la tabla de multiplicar o descompón un número en decenas y unidades'],
+  [/^\d+ ÷ \d+$/, 'Pregunta: ¿qué número multiplicado por el de la derecha da el de la izquierda?'],
+  [/²$/, 'Multiplica el número por sí mismo'],
+  [/³$/, 'Multiplica el número tres veces por sí mismo'],
+  [/^√/, '¿Qué número multiplicado por sí mismo da ese número?']
+];
+function hintFor(q) {
+  for (const [re, t] of HINTS) if (re.test(q)) return t;
+  return 'Lee con calma y resuelve paso a paso';
+}
+
+/* Crea 3 opciones: la correcta y 2 incorrectas, en orden aleatorio */
+function mkOpts(a) {
+  const step = Number.isInteger(a) ? 1 : 0.1, set = new Set([a]);
+  while (set.size < 3) {
+    let v = a + pick([-1, 1]) * step * r(1, 5);
+    v = Math.round(v * 100) / 100;
+    if (a >= 0 && v < 0) continue;
+    set.add(v);
+  }
+  return [...set].sort(() => Math.random() - 0.5);
+}
+
+/* ---------------------- Estado ---------------------- */
+// L = estado de ESTE dispositivo (lo que ve y hace el jugador)
+const L = { name: '', myId: null, isHost: false, peer: null, conn: null, code: '', avatar: '🐼', grade: 6, total: 10, q: '', type: 'abc', opts: [], active: false, locked: false, t: 0, iv: null, m1: false, h1: false, disp: '', log: [], rec: null, lastAns: null, coachT: null, sc: {} };
+// H = estado del ANFITRIÓN (solo se usa en el dispositivo que creó la sala)
+const H = { players: [], round: 0, total: 10, grade: 6, cur: null, open: false, locked: {}, timer: null, playing: false };
+
+function screen(id) {
+  ['home', 'lobby', 'game', 'end'].forEach(x => $(x).classList.toggle('hide', x !== id));
+  if (id !== 'end') { clearTimeout(L.coachT); $('coach').classList.add('hide'); $('closing').classList.add('hide'); }
+  clearTimeout(L.musT);
+  if (id === 'home') L.prevIds = null;
+  Snd.music(id === 'game' ? 'game' : id === 'end' ? null : 'menu');
+}
+const setHomeMsg = t => { $('homeMsg').textContent = t; if (t && !/^(Creando|Conectando)/.test(t)) Snd.wrong(); };
+const getName = () => $('name').value.trim().slice(0, 14) || 'Jugador';
+
+/* ---------------------- Red (PeerJS) ---------------------- */
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const mkCode = () => Array.from({ length: 4 }, () => CODE_CHARS[r(0, CODE_CHARS.length - 1)]).join('');
+const scoreList = () => H.players.map(p => ({ id: p.id, name: p.name, av: p.av, score: p.score }));
+
+// El anfitrión envía a todos (y a sí mismo)
+function bcast(m) {
+  H.players.forEach(p => { if (p.conn && p.conn.open) p.conn.send(m); });
+  onMsg(m);
+}
+function sendTo(id, m) {
+  if (id === 'host') return onMsg(m);
+  const p = H.players.find(x => x.id === id);
+  if (p && p.conn && p.conn.open) p.conn.send(m);
+}
+// Enviar mi respuesta
+function sendAns(v) {
+  L.lastAns = v;
+  if (L.isHost) hostAnswer('host', v);
+  else if (L.conn && L.conn.open) L.conn.send({ t: 'ans', v });
+}
+
+/* ----- Crear sala (anfitrión) ----- */
+function createRoom() {
+  L.name = getName();
+  L.isHost = true;
+  L.myId = 'host';
+  setHomeMsg('Creando sala…');
+  tryHost(0);
+}
+function tryHost(n) {
+  const code = mkCode();
+  const peer = new Peer(PREFIX + code);
+  peer.on('open', () => {
+    L.peer = peer;
+    L.code = code;
+    H.players = [{ id: 'host', name: L.name, av: L.avatar, score: 0, conn: null }];
+    peer.on('connection', onGuest);
+    sendLobby();
+  });
+  peer.on('disconnected', () => { try { peer.reconnect(); } catch (_) { } });
+  peer.on('error', e => {
+    if (e.type === 'unavailable-id' && n < 5) { peer.destroy(); tryHost(n + 1); }
+    else if (!L.code) setHomeMsg('No se pudo crear la sala. Revisa tu internet e inténtalo de nuevo.');
+  });
+}
+function sendLobby() {
+  bcast({ t: 'lobby', code: L.code, players: H.players.map(p => ({ id: p.id, name: p.name, av: p.av })) });
+}
+
+/* ----- Personajes ----- */
+const validAv = v => AVATARS.some(a => a[0] === v);
+// Si el personaje pedido ya está ocupado, se da el primero libre
+function freeAv(pref) {
+  const used = H.players.map(p => p.av);
+  if (validAv(pref) && !used.includes(pref)) return pref;
+  return (AVATARS.find(a => !used.includes(a[0])) || AVATARS[0])[0];
+}
+function setAvatar(id, v) {
+  if (H.playing) return;
+  const p = H.players.find(x => x.id === id);
+  if (!p || !validAv(v) || H.players.some(x => x.av === v && x.id !== id)) return;
+  p.av = v;
+  sendLobby();
+}
+function chooseAvatar(v) {
+  if (L.isHost) setAvatar('host', v);
+  else if (L.conn && L.conn.open) L.conn.send({ t: 'av', v });
+}
+function onGuest(conn) {
+  conn.on('data', d => {
+    if (!d || typeof d !== 'object') return;
+    if (d.t === 'join') {
+      if (H.playing || H.players.length >= MAX_PLAYERS) {
+        conn.send({ t: 'full' });
+        setTimeout(() => conn.close(), 400);
+        return;
+      }
+      H.players.push({ id: conn.peer, name: String(d.name || 'Jugador').slice(0, 14), av: freeAv(d.av), score: 0, conn });
+      sendLobby();
+    } else if (d.t === 'av') {
+      setAvatar(conn.peer, d.v);
+    } else if (d.t === 'ans') {
+      hostAnswer(conn.peer, d.v);
+    }
+  });
+  conn.on('close', () => {
+    H.players = H.players.filter(p => p.id !== conn.peer);
+    if (!H.playing) sendLobby();
+    else bcast({ t: 'board', scores: scoreList() });
+  });
+}
+
+/* ----- Unirse a una sala (invitado) ----- */
+function joinRoom() {
+  const code = $('code').value.trim().toUpperCase();
+  if (code.length < 4) { setHomeMsg('Escribe el código de 4 letras'); return; }
+  L.name = getName();
+  L.isHost = false;
+  L.code = code;
+  setHomeMsg('Conectando…');
+  let failT = null;
+  const peer = new Peer();
+  L.peer = peer;
+  peer.on('open', id => {
+    L.myId = id;
+    const conn = peer.connect(PREFIX + code, { reliable: true });
+    L.conn = conn;
+    failT = setTimeout(() => { setHomeMsg('No se pudo conectar. Revisa el código y tu internet.'); peer.destroy(); }, 12000);
+    conn.on('open', () => { clearTimeout(failT); conn.send({ t: 'join', name: L.name, av: L.avatar }); });
+    conn.on('data', onMsg);
+    conn.on('close', () => { clearInterval(L.iv); setHomeMsg('La sala se cerró'); screen('home'); });
+  });
+  peer.on('error', e => {
+    clearTimeout(failT);
+    setHomeMsg(e.type === 'peer-unavailable' ? 'No existe una sala con ese código' : 'Error de conexión (' + e.type + ')');
+  });
+}
+
+/* ---------------------- Lógica del anfitrión ---------------------- */
+function hostStart() {
+  if (H.playing) return;
+  H.playing = true;
+  H.round = 0;
+  H.grade = L.grade;
+  H.total = L.total;
+  H.players.forEach(p => p.score = 0);
+  bcast({ t: 'count' });
+  setTimeout(hostNext, 3400);
+}
+function hostNext() {
+  clearTimeout(H.timer);
+  if (H.round >= H.total) return hostEnd();
+  H.round++;
+  H.gi = r(0, GEN[H.grade].length - 1);
+  H.cur = GEN[H.grade][H.gi]();
+  const type = Math.random() < PROB_ABC ? 'abc' : 'calc';
+  H.locked = {};
+  H.open = true;
+  bcast({ t: 'q', gi: H.gi, round: H.round, total: H.total, grade: H.grade, q: H.cur.q, type, opts: type === 'abc' ? mkOpts(H.cur.a) : [], time: TIME, scores: scoreList() });
+  H.timer = setTimeout(() => {
+    if (!H.open) return;
+    H.open = false;
+    bcast({ t: 'timeout', answer: H.cur.a, steps: H.cur.s, w: H.cur.w });
+    setTimeout(hostNext, 2200);
+  }, TIME * 1000);
+}
+function hostAnswer(id, v) {
+  if (!H.open || H.locked[id] || typeof v !== 'number' || !isFinite(v)) return;
+  const p = H.players.find(x => x.id === id);
+  if (!p) return;
+  if (Math.abs(v - H.cur.a) < 0.01) {
+    H.open = false;
+    clearTimeout(H.timer);
+    p.score++;
+    bcast({ t: 'right', who: id, name: p.name, answer: H.cur.a, steps: H.cur.s, w: H.cur.w, scores: scoreList() });
+    setTimeout(hostNext, 2200);
+  } else {
+    H.locked[id] = true;
+    setTimeout(() => { delete H.locked[id]; }, 3000);
+    bcast({ t: 'wrong', who: id, name: p.name });
+  }
+}
+function hostEnd() {
+  H.playing = false;
+  bcast({ t: 'end', scores: scoreList().sort((a, b) => b.score - a.score) });
+}
+
+/* ---------------------- Mensajes que recibe cada dispositivo ---------------------- */
+function onMsg(m) {
+  if (!m || typeof m !== 'object') return;
+  switch (m.t) {
+    case 'full': setHomeMsg('La sala está llena o el juego ya empezó'); screen('home'); break;
+    case 'lobby': showLobby(m); break;
+    case 'count': showCount(); break;
+    case 'q': showQ(m); break;
+    case 'right': onRight(m); break;
+    case 'wrong': onWrong(m); break;
+    case 'timeout': onTimeout(m); break;
+    case 'board': renderBoard(m.scores); break;
+    case 'end': showEnd(m); break;
+  }
+}
+
+function showLobby(m) {
+  screen('lobby');
+  const nw = L.prevIds ? m.players.filter(p => !L.prevIds.includes(p.id)) : [];
+  if (!L.prevIds) Snd.join();
+  else if (nw.length) { Snd.join(); const last = nw[nw.length - 1]; setTimeout(() => Snd.voice(last.av), 250); }
+  L.prevIds = m.players.map(p => p.id);
+  $('roomCode').textContent = m.code;
+  $('plist').innerHTML = m.players.map(p => `<span class="${p.id === L.myId ? 'me' : ''}"><i>${esc(p.av || '')}</i>${esc(p.name)}</span>`).join('');
+  const me = m.players.find(p => p.id === L.myId);
+  if (me && me.av) L.avatar = me.av;
+  $('lobbyChars').innerHTML = AVATARS.map(([e, n]) => {
+    const owner = m.players.find(p => p.av === e), mine = owner && owner.id === L.myId;
+    return `<button class="${mine ? 'sel' : ''}" ${owner && !mine ? 'disabled' : ''} data-av="${e}" title="${n}">${e}</button>`;
+  }).join('');
+  drawQR();
+  $('hostOpts').classList.toggle('hide', !L.isHost);
+  $('waitMsg').classList.toggle('hide', L.isHost);
+}
+
+function renderBoard(scores) {
+  $('board').innerHTML = scores.map(s => `<div class="chip${s.id === L.myId ? ' me' : ''}${L.sc[s.id] !== undefined && L.sc[s.id] !== s.score ? ' pop' : ''}"><b>${esc(s.av || '')} ${esc(s.name)}</b><span>${s.score}</span></div>`).join('');
+  scores.forEach(s => L.sc[s.id] = s.score);
+}
+function showCount() {
+  const c = $('count');
+  c.classList.remove('hide');
+  ['3', '2', '1', '¡YA!'].forEach((t, i) => setTimeout(() => {
+    c.innerHTML = `<b>${t}</b>`;
+    if (i < 3) Snd.ask(); else { Snd.go(); setTimeout(() => c.classList.add('hide'), 700); }
+  }, i * 850));
+}
+function flash(c) {
+  const d = document.createElement('div');
+  d.className = 'flash';
+  d.style.background = `radial-gradient(circle,transparent 40%,${c}99)`;
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), 650);
+}
+
+function showQ(m) {
+  screen('game');
+  clearInterval(L.iv);
+  L.q = m.q; L.type = m.type; L.opts = m.opts;
+  L.active = true; L.locked = false; L.disp = '';
+  L.m1 = false; L.h1 = false;
+  if (m.round === 1) L.log = [];
+  L.rec = { q: m.q, gi: m.gi, grade: m.grade, tries: [], ok: false, answer: null, timeout: false, steps: null, w: [] };
+  L.log.push(L.rec);
+  L.sec = 0;
+  if (m.round === 1) Snd.go(); else Snd.ask();
+  showDisp();
+  $('calc').classList.remove('lock');
+  $('q').textContent = m.q;
+  $('gInfo').textContent = `Grado ${m.grade}° · Problema ${m.round}/${m.total}`;
+  renderBoard(m.scores);
+  const abc = $('abc'), send = $('send');
+  if (m.type === 'abc') {
+    abc.classList.remove('hide');
+    send.classList.add('hide');
+    [...abc.children].forEach((b, k) => b.textContent = ['A', 'B', 'C'][k] + ') ' + m.opts[k]);
+  } else {
+    abc.classList.add('hide');
+    send.classList.remove('hide');
+  }
+  setMsg(m.type === 'abc' ? 'Elige A, B o C (puedes usar tu calculadora)' : 'Calcula y envía tu respuesta con la calculadora');
+  panda(m.round === 1 ? '¡Hola! Soy Panda 🐼 ¡Que gane el mejor! Si necesitas ayuda toca 💡 Pista' : pick(START), 'idle');
+  L.t = m.time;
+  $('tb').style.width = '100%';
+  $('tnum').textContent = m.time; $('bar').className = 'bar'; Snd.tempo = 1;
+  L.iv = setInterval(() => {
+    L.t -= 0.1;
+    $('tb').style.width = Math.max(0, L.t / m.time * 100) + '%';
+    $('tnum').textContent = Math.max(0, Math.ceil(L.t));
+    $('bar').className = 'bar' + (L.t <= 8 ? ' crit' : L.t <= 20 ? ' low' : '');
+    Snd.tempo = L.t <= 10 ? 0.85 : 1;
+    if (L.t <= 40 && !L.m1) { L.m1 = true; panda(pick(MOTI), 'idle'); }
+    if (L.t <= 25 && !L.h1) { L.h1 = true; giveHint(); }
+    const sc = Math.ceil(L.t);
+    if (L.active && sc <= 5 && sc > 0 && sc !== L.sec) { L.sec = sc; Snd.beep(); }
+    if (L.t <= 0) clearInterval(L.iv);
+  }, 100);
+}
+
+function onRight(m) {
+  L.active = false;
+  Snd.tempo = 1;
+  clearInterval(L.iv);
+  renderBoard(m.scores);
+  if (L.rec) { L.rec.answer = m.answer; L.rec.steps = m.steps; L.rec.w = m.w || []; if (m.who === L.myId) L.rec.ok = true; }
+  if (m.who === L.myId) {
+    Snd.right();
+    flash('#22c55e');
+    celebrate();
+    panda(pick([`¡Bravo ${m.name}! 🎉`, `¡Eres un genio, ${m.name}! 🌟`, `¡Excelente, ${m.name}! 👏`, `¡Lo lograste, ${m.name}! 💪`, `¡Sigue así, campeón! 🏅`]), 'happy');
+    setMsg(`🎉 ¡Muy bien! +1 punto. Respuesta: ${m.answer}`, '#4ade80');
+  } else {
+    Snd.other();
+    panda(`¡${m.name} fue más rápido! ¡La próxima eres tú! 💪`, 'idle');
+    setMsg(`✅ ${m.name} acertó. Respuesta: ${m.answer}`, '#fbbf24');
+  }
+}
+
+function onWrong(m) {
+  if (m.who === L.myId) {
+    L.locked = true;
+    Snd.wrong();
+    flash('#ef4444');
+    if (L.rec) L.rec.tries.push(L.lastAns);
+    $('calc').classList.add('lock');
+    setMsg('❌ Fallaste y pierdes 3 segundos', '#f87171');
+    panda(pick(['¡Ánimo, tú puedes! 💪', '¡No pasa nada, equivocarse es aprender! 🌱', '¡Piensa con calma! Toca 💡 Pista si quieres ayuda', '¡Casi! Inténtalo otra vez 😉']), 'sad');
+    setTimeout(() => { L.locked = false; $('calc').classList.remove('lock'); }, 3000);
+  } else if (L.active) {
+    setMsg(`❌ ${m.name} falló`, '#fbbf24');
+  }
+}
+
+function onTimeout(m) {
+  L.active = false;
+  Snd.tempo = 1;
+  clearInterval(L.iv);
+  if (L.rec) { L.rec.answer = m.answer; L.rec.timeout = true; L.rec.steps = m.steps; L.rec.w = m.w || []; }
+  Snd.timeout();
+  setMsg(`⏰ Se acabó el tiempo. Respuesta: ${m.answer}`, '#fbbf24');
+  panda('¡Uy! Se acabó el tiempo. ¡La próxima sí! 🎋', 'sad');
+}
+
+function showEnd(m) {
+  screen('end');
+  clearInterval(L.iv);
+  L.active = false;
+  const top = m.scores.length ? m.scores[0].score : 0;
+  const win = m.scores.filter(s => s.score === top);
+  const tie = win.length > 1;
+  // Personaje(s) ganador(es) bailando y el panda entregando el trofeo
+  const wa = $('winAv');
+  wa.style.fontSize = (win.length > 4 ? 44 : win.length > 2 ? 64 : 84) + 'px';
+  wa.innerHTML = win.map(w => `<span>${esc(w.av || '🐼')}</span>`).join('');
+  const pod = $('podium');
+  pod.classList.remove('go');
+  void pod.offsetWidth;
+  pod.classList.add('go');
+  $('winner').textContent = tie ? `¡Empate entre ${win.map(w => w.name).join(' y ')}!` : `¡Felicidades ${win[0].name}! Eres el campeón`;
+  $('final').innerHTML = m.scores.map((s, i) => `<div class="rank${s.id === L.myId ? ' me' : ''}"><span>${['🥇', '🥈', '🥉'][i] || (i + 1) + '.'}</span><b>${esc(s.av || '')} ${esc(s.name)}</b><span>${s.score} pts</span></div>`).join('');
+  $('pandaEnd').textContent = tie ? '🐼 ¡Qué empate! Un trofeo para cada campeón 🏆' : `🐼 ¡Felicidades ${win[0].name}! Toma tu trofeo 🏆`;
+  $('again').classList.toggle('hide', !L.isHost);
+  $('endWait').classList.toggle('hide', L.isHost);
+  Snd.win();
+  L.musT = setTimeout(() => { if (!$('end').classList.contains('hide')) Snd.music('menu'); }, 4200);
+  setTimeout(() => { if (!$('end').classList.contains('hide')) Snd.voice(win[0].av); }, 2800);
+  celebrate();
+  setTimeout(celebrate, 800);
+  // Cuando termina la entrega del premio, el panda aparece en el centro
+  clearTimeout(L.coachT);
+  L.coachT = setTimeout(() => { if (!$('end').classList.contains('hide')) showCoach(); }, 4800);
+}
+
+/* ---------------------- Calculadora, pandita y efectos ---------------------- */
+const KEYS = ['C', '⌫', '(', ')', '7', '8', '9', '÷', '4', '5', '6', '×', '1', '2', '3', '−', '0', '.', '=', '+'];
+KEYS.forEach(k => {
+  const b = document.createElement('button');
+  b.textContent = k;
+  b.onclick = () => press(k);
+  $('keys').appendChild(b);
+});
+for (let k = 0; k < 3; k++) {
+  const b = document.createElement('button');
+  b.onclick = () => pickOpt(k);
+  $('abc').appendChild(b);
+}
+
+function showDisp() { $('disp').textContent = L.disp || '0'; }
+
+function calc(expr) {
+  const e = expr.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+  if (!/^[0-9+\-*/().\s]+$/.test(e)) return NaN;
+  try {
+    const v = Function('"use strict";return (' + e + ')')();
+    return typeof v === 'number' && isFinite(v) ? v : NaN;
+  } catch (_) { return NaN; }
+}
+
+function press(k) {
+  if (!L.active || L.locked) return;
+  Snd.tick();
+  if (k === 'C') L.disp = '';
+  else if (k === '⌫') L.disp = L.disp.slice(0, -1);
+  else if (k === '=') {
+    const v = calc(L.disp);
+    L.disp = isNaN(v) ? '' : String(Math.round(v * 1e6) / 1e6);
+  } else L.disp += k;
+  showDisp();
+}
+
+function pickOpt(k) {
+  if (!L.active || L.locked) return;
+  sendAns(L.opts[k]);
+}
+
+function submit() {
+  if (!L.active || L.locked) return;
+  const v = calc(L.disp);
+  if (isNaN(v)) { setMsg('Escribe un número u operación válida', '#fbbf24'); return; }
+  sendAns(v);
+}
+
+function setMsg(t, c) { $('msg').textContent = t; $('msg').style.color = c || '#f1f5f9'; }
+
+// El pandita dice un mensaje y se mueve: 'idle' (suave), 'happy' (salta), 'sad' (se sacude)
+function panda(t, m) {
+  $('bubble').textContent = t;
+  const p = $('panda');
+  p.className = '';
+  void p.offsetWidth;
+  p.className = m || 'idle';
+}
+
+function giveHint() {
+  if (!L.active) return;
+  Snd.hint();
+  panda('💡 Pista: ' + hintFor(L.q), 'idle');
+}
+
+function confetti() {
+  const fx = $('fx'), C = ['#fde047', '#f472b6', '#22d3ee', '#a78bfa', '#34d399', '#fb923c'];
+  for (let k = 0; k < 40; k++) {
+    const d = document.createElement('i');
+    d.style.cssText = `position:fixed;top:-20px;left:${r(0, 100)}vw;width:${r(6, 12)}px;height:${r(10, 18)}px;background:${pick(C)};z-index:98;pointer-events:none;border-radius:2px`;
+    fx.appendChild(d);
+    d.animate([{ transform: 'translateY(0) rotate(0)', opacity: 1 }, { transform: `translate(${r(-80, 80)}px,${innerHeight + 40}px) rotate(${r(360, 1080)}deg)`, opacity: .8 }], { duration: r(1600, 3000), easing: 'ease-in' }).onfinish = () => d.remove();
+  }
+}
+// Emojis que caen cuando alguien acierta o al final del juego
+function celebrate() {
+  confetti();
+  const fx = $('fx'), E = ['🎉', '🎊', '⭐', '👏', '🥳', '✨', '🏅', '😄'];
+  for (let k = 0; k < 26; k++) {
+    const s = document.createElement('span');
+    s.textContent = pick(E);
+    s.style.cssText = `position:fixed;top:-50px;left:${r(0, 95)}vw;font-size:${r(22, 40)}px;pointer-events:none;z-index:99;transition:transform ${r(15, 25) / 10}s ease-in,opacity 2s`;
+    fx.appendChild(s);
+    requestAnimationFrame(() => {
+      s.style.transform = `translateY(${innerHeight + 100}px) rotate(${r(-360, 360)}deg)`;
+      s.style.opacity = '0.2';
+    });
+    setTimeout(() => s.remove(), 2700);
+  }
+}
+
+/* ---------------------- Música y sonidos (se generan con el navegador, sin archivos) ---------------------- */
+const Snd = {
+  ctx: null, master: null, mus: null, sfx: null, bus: null, mode: null, cur: null, timer: null, step: 0, next: 0,
+  muted: (() => { try { return localStorage.getItem('dm-mute') === '1'; } catch (_) { return false; } })(),
+  // Tres músicas: 'menu' (suave), 'game' (animada con batería) y 'focus' (calmada para repasar errores)
+  tempo: 1,
+  TUNES: {
+    game: { dt: 60 / 132 / 4, prog: [0, 1, 2, 3, 0, 1, 2, 3], chords: [[60, 64, 67], [55, 59, 62], [57, 60, 64], [53, 57, 60]], bass: [36, 43, 45, 41], bd: 2, bv: .3, pad: .08, arp: .07, at: 'square', lead: 'square', lv: .13, drums: 1,
+      mel: [[[0, 76, 2], [2, 79, 2], [4, 84, 4], [8, 83, 2], [10, 79, 2], [12, 76, 4]], [[0, 74, 2], [2, 79, 2], [4, 83, 4], [8, 86, 2], [10, 83, 2], [12, 79, 4]], [[0, 76, 2], [2, 81, 2], [4, 84, 4], [8, 88, 2], [10, 84, 2], [12, 81, 4]], [[0, 77, 2], [2, 81, 2], [4, 84, 2], [6, 81, 2], [8, 79, 2], [10, 76, 2], [12, 72, 4]],
+        [[0, 84, 3], [3, 83, 1], [4, 84, 2], [6, 79, 2], [8, 76, 4], [12, 79, 4]], [[0, 83, 3], [3, 81, 1], [4, 83, 2], [6, 79, 2], [8, 74, 4], [12, 79, 4]], [[0, 81, 2], [2, 84, 2], [4, 88, 4], [8, 86, 2], [10, 84, 2], [12, 81, 4]], [[0, 84, 2], [2, 81, 2], [4, 79, 2], [6, 77, 2], [8, 79, 4], [12, 83, 4]]] },
+    menu: { dt: 60 / 92 / 4, prog: [0, 1, 2, 3], chords: [[60, 64, 67, 71], [57, 60, 64, 67], [53, 57, 60, 64], [55, 59, 62, 67]], bass: [36, 45, 41, 43], bd: 8, bv: .3, pad: .08, arp: .06, at: 'sine', lead: 'triangle', lv: .15, drums: 2,
+      mel: [[[0, 76, 4], [6, 79, 2], [8, 83, 6]], [[0, 81, 4], [6, 79, 2], [8, 76, 6]], [[0, 77, 4], [6, 81, 2], [8, 84, 6]], [[0, 83, 3], [4, 79, 2], [8, 74, 4], [12, 79, 4]]] },
+    focus: { dt: 60 / 68 / 4, prog: [0, 1, 2, 3], chords: [[57, 60, 64, 67], [53, 57, 60, 64], [55, 60, 64, 67], [55, 59, 62, 67]], bass: [45, 41, 36, 43], bd: 8, bv: .25, pad: .09, arp: .04, at: 'sine', lead: 'sine', lv: .17, drums: 0,
+      mel: [[[0, 72, 6], [8, 69, 6]], [[0, 72, 4], [6, 69, 2], [8, 65, 6]], [[0, 67, 4], [6, 72, 2], [8, 76, 6]], [[0, 74, 4], [6, 71, 2], [8, 67, 6]]] }
+  },
+  hz: n => 440 * Math.pow(2, (n - 69) / 12),
+  init() {
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    try {
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.master.gain.value = this.muted ? 0 : 1;
+      this.master.connect(this.ctx.destination);
+      this.mus = this.ctx.createGain();
+      this.mus.gain.value = 0.7;
+      this.mus.connect(this.master);
+      this.sfx = this.ctx.createGain();
+      this.sfx.gain.value = 0.9;
+      this.sfx.connect(this.master);
+      // Eco y ruido (para la batería)
+      const d = this.dly = this.ctx.createDelay(1), fb = this.ctx.createGain(), lp = this.ctx.createBiquadFilter();
+      fb.gain.value = .32; lp.type = 'lowpass'; lp.frequency.value = 2400;
+      this.send = this.ctx.createGain(); this.send.gain.value = .35;
+      this.send.connect(d); d.connect(lp); lp.connect(fb); fb.connect(d); lp.connect(this.mus);
+      this.nbuf = this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate);
+      const nd = this.nbuf.getChannelData(0);
+      for (let i = 0; i < nd.length; i++) nd[i] = Math.random() * 2 - 1;
+    } catch (_) { this.ctx = null; }
+  },
+  // Los navegadores solo dejan sonar después de que la persona toca la pantalla
+  unlock() {
+    this.init();
+    if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.mode && !this.timer) this.start();
+  },
+  tone(f, t, d, type, v, dest, f2, atk) {
+    const c = this.ctx;
+    if (!c) return;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v || 0.3, t + (atk || 0.015));
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g);
+    g.connect(dest || this.sfx);
+    o.start(t);
+    o.stop(t + d + 0.05);
+  },
+  // list = [[nota MIDI, segundo en que empieza, duración], ...]
+  seq(list, type, v, dest) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime + 0.02;
+    list.forEach(([n, o, d]) => this.tone(this.hz(n), t + o, d, type, v, dest));
+  },
+  /* Efectos */
+  click() { this.seq([[81, 0, .05]], 'triangle', .15); },
+  join() { this.seq([[72, 0, .1], [79, .1, .22]], 'triangle', .3); },
+  go() { this.seq([[67, 0, .12], [67, .16, .12], [72, .32, .45]], 'triangle', .38); },
+  hint() { this.seq([[88, 0, .1], [92, .08, .1], [95, .16, .28]], 'sine', .25); },
+  beep() { this.seq([[84, 0, .06]], 'square', .1); },
+  right() { this.seq([[72, 0, .12], [76, .09, .12], [79, .18, .12], [84, .27, .4]], 'triangle', .4); this.seq([[96, .27, .25]], 'sine', .12); },
+  wrong() {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime + 0.02;
+    this.tone(260, t, .28, 'sawtooth', .28, this.sfx, 120);
+    this.tone(180, t + .22, .4, 'square', .18, this.sfx, 70);
+  },
+  timeout() { this.seq([[62, 0, .28], [61, .3, .28], [60, .6, .28], [57, .9, .7]], 'triangle', .35); },
+  other() { this.seq([[79, 0, .08], [84, .07, .14]], 'sine', .18); },
+  ask() { this.seq([[76, 0, .08], [83, .08, .16]], 'triangle', .22); },
+  tick() { this.seq([[88, 0, .04]], 'square', .05); },
+  pop() { this.seq([[79, 0, .1], [91, .08, .2]], 'sine', .3); },
+  // Fanfarria cuando se entrega el premio
+  win() {
+    this.seq([[60, 0, .15], [64, .15, .15], [67, .3, .15], [72, .45, .5], [67, 1, .15], [72, 1.15, .15], [76, 1.3, .15], [79, 1.45, 1]], 'triangle', .38);
+    this.seq([[72, 1.45, 1.3], [76, 1.45, 1.3], [79, 1.45, 1.3]], 'sine', .14);
+    this.seq([[48, 0, .5], [55, .5, .5], [48, 1, .4], [48, 1.45, 1.3]], 'sine', .3);
+  },
+  // Cada personaje tiene su propio sonido
+  voice(av) {
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime + 0.02;
+    const T = (f, o, d, ty, v, f2) => this.tone(f, t + o, d, ty, v, this.sfx, f2);
+    switch (av) {
+      case '🐼': T(330, 0, .25, 'sine', .4, 260); T(260, .28, .35, 'sine', .35, 200); break;
+      case '🦊': T(700, 0, .1, 'triangle', .35, 1100); T(1100, .12, .14, 'triangle', .3, 800); T(800, .3, .1, 'triangle', .25, 1000); break;
+      case '🐯': T(120, 0, .55, 'sawtooth', .3, 70); T(125, 0, .55, 'sawtooth', .2, 75); break;
+      case '🦁': T(90, 0, .25, 'sawtooth', .35, 190); T(190, .25, .5, 'sawtooth', .35, 60); break;
+      case '🐸': [0, .2].forEach(o => T(160, o, .15, 'square', .2, 320)); break;
+      case '🐵': [0, .14, .28, .42].forEach((o, i) => T(i % 2 ? 420 : 560, o, .12, 'triangle', .3, i % 2 ? 330 : 480)); break;
+      case '🐙': [0, .1, .2, .32, .42].forEach(o => T(300 + Math.random() * 200, o, .09, 'sine', .3, 700)); break;
+      case '🦄': [84, 88, 91, 96, 100].forEach((n, i) => T(this.hz(n), i * .08, .3, 'sine', .25)); break;
+      case '🐶': T(320, 0, .13, 'square', .22, 160); T(300, .2, .15, 'square', .22, 150); break;
+      case '🐱': T(520, 0, .15, 'triangle', .35, 900); T(900, .15, .3, 'triangle', .3, 450); break;
+      case '🤖': [[440, 0], [660, .12], [330, .24], [880, .36]].forEach(([f, o]) => T(f, o, .09, 'square', .18)); break;
+      case '👽': T(500, 0, .2, 'sine', .3, 1300); T(1300, .2, .2, 'sine', .3, 300); T(300, .4, .2, 'sine', .3, 900); break;
+      default: this.pop();
+    }
+  },
+  /* Música: 'menu', 'game' o 'focus'. Cada una tiene acordes, bajo, arpegio, melodía y batería */
+  noise(t, d, hp, v, dest) {
+    const c = this.ctx, n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    n.buffer = this.nbuf; f.type = 'highpass'; f.frequency.value = hp;
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    n.connect(f); f.connect(g); g.connect(dest); n.start(t); n.stop(t + d + .02);
+  },
+  kick(t, v, dest) {
+    const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+    o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(40, t + .14);
+    g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + .22);
+    o.connect(g); g.connect(dest); o.start(t); o.stop(t + .25);
+  },
+  start() {
+    if (!this.ctx || this.timer || !this.mode) return;
+    this.cur = this.mode; this.step = 0;
+    const T = this.TUNES[this.cur], c = this.ctx;
+    this.bus = c.createGain(); this.bus.connect(this.mus); this.bus.connect(this.send);
+    this.dbus = c.createGain(); this.dbus.connect(this.mus);
+    this.dly.delayTime.value = T.dt * 3;
+    this.next = c.currentTime + .1;
+    this.timer = setInterval(() => this.sched(), 100);
+  },
+  sched() {
+    const c = this.ctx, T = this.TUNES[this.cur];
+    if (!c || !T) return;
+    if (this.next < c.currentTime) this.next = c.currentTime + .05;
+    while (this.next < c.currentTime + .4) {
+      this.play(T, this.next, this.step, T.dt * this.tempo);
+      this.step = (this.step + 1) % (T.prog.length * 16);
+      this.next += T.dt * this.tempo;
+    }
+  },
+  play(T, t, st, dt) {
+    const bar = st >> 4, s = st & 15, ch = T.chords[T.prog[bar]], root = T.bass[T.prog[bar]], B = this.bus, D = this.dbus;
+    if (s === 0) ch.forEach(n => this.tone(this.hz(n), t, dt * 16, 'triangle', T.pad, B, 0, dt * 5));
+    if (s % T.bd === 0) this.tone(this.hz(root + [0, 0, 12, 0, 0, 12, 7, 0][(s >> 1) & 7]), t, dt * 1.8, 'triangle', T.bv, B);
+    if (s % 2 === 0) this.tone(this.hz(ch[(s >> 1) % ch.length] + 12), t, dt * 1.6, T.at, T.arp, B);
+    T.mel[bar % T.mel.length].forEach(([o, n, l]) => { if (o === s) this.tone(this.hz(n), t, dt * l * .95, T.lead, T.lv, B, 0, .01); });
+    if (T.drums === 1) {
+      if (s % 4 === 0) this.kick(t, .8, D);
+      if (s === 4 || s === 12 || (bar % 4 === 3 && s > 12)) this.noise(t, .12, 1800, .35, D);
+      if (s % 2 === 0) this.noise(t, s % 4 === 2 ? .09 : .03, 7000, s % 4 === 2 ? .12 : .07, D);
+    } else if (T.drums === 2) {
+      if (s === 0 || s === 8) this.kick(t, .45, D);
+      if (s % 4 === 2) this.noise(t, .04, 8000, .05, D);
+    }
+  },
+  stop() {
+    clearInterval(this.timer); this.timer = null; this.cur = null;
+    [this.bus, this.dbus].forEach(b => {
+      if (b && this.ctx) { b.gain.setTargetAtTime(0, this.ctx.currentTime, .05); setTimeout(() => { try { b.disconnect(); } catch (_) { } }, 800); }
+    });
+    this.bus = this.dbus = null;
+  },
+  music(mode) {
+    this.mode = mode;
+    if (!this.ctx) return;
+    if (this.cur === mode && this.timer) return;
+    this.stop();
+    if (mode) this.start();
+  },
+  setMuted(m) {
+    this.muted = m;
+    if (this.master) this.master.gain.value = m ? 0 : 1;
+    try { localStorage.setItem('dm-mute', m ? '1' : '0'); } catch (_) { }
+  }
+};
+['pointerdown', 'keydown', 'touchstart'].forEach(ev => addEventListener(ev, () => Snd.unlock(), { passive: true }));
+const showMute = () => { $('muteBtn').textContent = Snd.muted ? '🔇' : '🔊'; };
+$('muteBtn').onclick = () => { Snd.unlock(); Snd.setMuted(!Snd.muted); showMute(); };
+showMute();
+// Todos los botones hacen "clic" (la calculadora y los personajes tienen su propio sonido)
+document.addEventListener('click', e => {
+  const b = e.target.closest && e.target.closest('button');
+  if (b && !b.closest('.keys') && !b.closest('.chars')) Snd.click();
+});
+Snd.music('menu');
+
+/* ---------------------- Sala de repaso: Panda te ayuda a entender CADA error, uno por uno ---------------------- */
+const FRASES = [
+  'Cada error es un escalón para llegar más alto 🪜',
+  'Los campeones no nacen, se entrenan 🏋️',
+  'Tu cerebro crece cada vez que corriges algo 🧠',
+  'Equivocarse es parte de aprender, ¡y tú estás aprendiendo! 🌱',
+  'Los pandas no se rinden, y tú tampoco 🎋',
+  'Con práctica y paciencia, las matemáticas se vuelven fáciles 🚀'
+];
+const fmt = v => v == null ? '?' : String(Math.round(v * 100) / 100);
+const CO = { list: [], i: 0, st: 'intro', k: 0, prob: null, n: 0, fixed: 0, done: [], good: 0, total: 0 };
+
+// Averigua QUÉ tipo de error cometiste, mirando lo que respondiste
+function diagnose(x) {
+  const a = x.answer, out = [], seen = [];
+  if (!x.tries.length) return [{ tag: '⏰ Tiempo', text: 'Se acabó el tiempo sin responder. Cuando te bloquees, toca 💡 Pista pronto o empieza por la parte más fácil del problema.' }];
+  x.tries.forEach(t => {
+    if (seen.includes(t)) return;
+    seen.push(t);
+    const hit = (x.w || []).find(([v]) => Math.abs(v - t) < .01 && Math.abs(v - a) > .01), d = Math.abs(t - a);
+    if (hit) out.push({ tag: '🎯 Error típico', text: `Respondiste ${fmt(t)}. ${hit[1]}` });
+    else if (a !== 0 && Math.abs(t + a) < .01) out.push({ tag: '± Signo', text: `Respondiste ${fmt(t)}: tienes el número correcto pero con el signo contrario. Repasa la regla de los signos.` });
+    else if (a !== 0 && (Math.abs(t - a * 10) < .01 || Math.abs(t - a / 10) < .01)) out.push({ tag: '🔢 Cifras', text: `Respondiste ${fmt(t)}: es 10 veces ${t > a ? 'mayor' : 'menor'}. Cuidado con un cero de más o con el punto decimal.` });
+    else if (d <= 5) out.push({ tag: '🔍 Descuido', text: `Respondiste ${fmt(t)}: te equivocaste por solo ${fmt(d)}. Suele ser un descuido en la última operación: revisa cada paso despacio.` });
+    else out.push({ tag: '🧭 Método', text: `Respondiste ${fmt(t)}, que está lejos de ${fmt(a)}. No fue un descuido: el camino que elegiste es distinto. Compara tu método con los pasos y busca dónde se separan.` });
+  });
+  return out;
+}
+const newProb = x => { let p, k = 0; do { p = GEN[x.grade][x.gi](); } while (p.q === x.q && ++k < 8); return p; };
+const stepsHtml = (arr, n) => arr.slice(0, n).map((t, j) => `<div class="stp"><b>${j + 1}</b>${esc(t)}</div>`).join('');
+
+function coachRender() {
+  const x = CO.list[CO.i], n = CO.list.length, el = $('coachBody');
+  let h = '', mood = 'idle';
+  $('coachProg').innerHTML = CO.st === 'perfect' ? '' : CO.list.map((_, k) => `<i class="${CO.done[k] ? 'ok' : k === CO.i && CO.st !== 'intro' && CO.st !== 'end' ? 'on' : ''}"></i>`).join('');
+  if (CO.st === 'perfect') {
+    mood = CO.total ? 'happy' : 'idle';
+    h = CO.total
+      ? `<h3>¡Cero errores, qué crack! 🌟</h3><p class="coachSum">Sumaste ${CO.good} de ${CO.total}. Para seguir creciendo, prueba un grado más alto 📈</p><p class="coachMoti">“${esc(pick(FRASES))}”</p>`
+      : `<h3>¡Gracias por jugar! 🐼</h3><p class="coachSum">Juega una partida y te ayudaré con tus errores.</p>`;
+    h += '<button class="go" data-a="close">¡A jugar! 🚀</button>';
+  } else if (CO.st === 'intro') {
+    const tags = {};
+    CO.list.forEach(e => { const t = diagnose(e)[0].tag; tags[t] = (tags[t] || 0) + 1; });
+    h = `<h3>¡Vamos a convertir tus errores en puntos! 💪</h3>
+      <p class="coachSum">Sumaste ${CO.good} de ${CO.total}. Tuviste ${n} problema${n > 1 ? 's' : ''} con errores.</p>
+      <div>${Object.entries(tags).map(([t, c]) => `<span class="tag">${t} × ${c}</span>`).join('')}</div>
+      <p style="margin:10px 0">Los repasamos <b>de uno en uno</b>: entiendes qué pasó, ves el paso a paso y lo practicas con números nuevos. Respira y concéntrate 🧘</p>
+      <button class="go" data-a="start">¡A concentrarnos! 🎯</button><button class="ghost" data-a="close">Ahora no</button>`;
+  } else if (CO.st === 'see') {
+    const ds = diagnose(x);
+    h = `<span class="tag">Error ${CO.i + 1} de ${n}</span><div class="bigQ">${esc(x.q)}</div>
+      <div class="ans">${x.tries.length ? x.tries.map(v => `<div class="bad">❌ Tú: ${esc(fmt(v))}</div>`).join('') : '<div class="bad">⏰ Sin respuesta</div>'}<div class="good">✅ Correcta: ${esc(fmt(x.answer))}</div></div>
+      <h3>¿Qué pasó?</h3>${ds.map(d => `<div class="why"><span class="tag">${d.tag}</span><br>${esc(d.text)}</div>`).join('')}
+      <button class="go" data-a="steps">Ver el paso a paso 👀</button>`;
+  } else if (CO.st === 'steps' || CO.st === 'reveal') {
+    const st = CO.st === 'steps' ? (x.steps || [hintFor(x.q), `La respuesta correcta es ${fmt(x.answer)}`]) : CO.prob.s, q = CO.st === 'steps' ? x.q : CO.prob.q;
+    const last = CO.k >= st.length - 1;
+    h = `<h3>Paso a paso 🪜</h3><div class="bigQ">${esc(q)}</div>${stepsHtml(st, CO.k + 1)}`;
+    if (CO.st === 'steps') h += `<button class="go" data-a="${last ? 'try' : 'next'}">${last ? '¡Ahora practico yo! 🎯' : 'Siguiente paso ▶'}</button>`;
+    else h += last
+      ? `<p class="coachMsg">No pasa nada: lo importante es entender el camino. 💛</p><button class="go" data-a="try">Probar con otro problema 🔁</button><button class="ghost" data-a="nexterr">${CO.i + 1 < n ? 'Seguir con el siguiente ▶' : 'Terminar 🏁'}</button>`
+      : `<button class="go" data-a="next">Siguiente paso ▶</button>`;
+  } else if (CO.st === 'try') {
+    h = `<span class="tag">Tu turno 🎯</span><p>Mismo tipo de problema, números nuevos. ¡Tú puedes!</p><div class="bigQ">${esc(CO.prob.q)}</div>
+      <input id="cin" inputmode="decimal" placeholder="Escribe tu respuesta" autocomplete="off">
+      <div class="coachMsg" id="cmsg"></div>
+      <button class="go" data-a="check">Comprobar ✅</button>
+      <button class="ghost" data-a="hint">💡 Pista</button><button class="ghost" data-a="again">🔁 Ver los pasos otra vez</button>`;
+  } else if (CO.st === 'ok') {
+    mood = 'happy';
+    h = `<div class="big">🎉</div><h3>¡Corregido! Ahora sí lo dominas</h3><p class="coachSum">Respuesta: ${esc(fmt(CO.prob.a))}</p>
+      <button class="go" data-a="nexterr">${CO.i + 1 < n ? 'Siguiente error ▶' : 'Terminar 🏁'}</button>`;
+  } else if (CO.st === 'end') {
+    mood = CO.fixed === n ? 'happy' : 'idle';
+    h = `<h3>${CO.fixed === n ? '¡Corregiste todos tus errores! 🌟' : '¡Buen repaso! 📚'}</h3><p class="coachSum">Corregiste ${CO.fixed} de ${n}.</p>
+      <p class="coachMoti">“${esc(pick(FRASES))}”</p><button class="go" data-a="close">¡Listo, a jugar! 🚀</button>`;
+  }
+  el.innerHTML = h;
+  const p = $('coachPanda');
+  p.className = 'coachPanda';
+  void p.offsetWidth;
+  p.className = 'coachPanda ' + mood;
+  $('coach').querySelector('.coachBox').scrollTop = 0;
+  const inp = $('cin');
+  if (inp) inp.focus();
+}
+
+function coachAct(a) {
+  const x = CO.list[CO.i], n = CO.list.length;
+  if (a === 'close') return closeCoach();
+  if (a === 'start') { CO.st = 'see'; Snd.pop(); }
+  else if (a === 'steps') { CO.st = 'steps'; CO.k = 0; Snd.pop(); }
+  else if (a === 'next') { CO.k++; Snd.tick(); }
+  else if (a === 'try' || a === 'again2') { CO.prob = newProb(x); CO.n = 0; CO.st = 'try'; Snd.pop(); }
+  else if (a === 'again') { CO.st = 'steps'; CO.k = 0; }
+  else if (a === 'hint') { Snd.hint(); $('cmsg').textContent = '💡 ' + hintFor(CO.prob.q); return; }
+  else if (a === 'nexterr') { if (CO.i + 1 < n) { CO.i++; CO.st = 'see'; CO.k = 0; Snd.pop(); } else CO.st = 'end'; }
+  else if (a === 'check') {
+    const v = calc($('cin').value.replace(',', '.'));
+    if (isNaN(v)) { $('cmsg').textContent = 'Escribe un número o una operación 🙂'; return; }
+    if (Math.abs(v - CO.prob.a) < .01) {
+      if (!CO.done[CO.i]) CO.fixed++;
+      CO.done[CO.i] = true; CO.st = 'ok'; Snd.right(); celebrate();
+    } else {
+      CO.n++; Snd.wrong();
+      if (CO.n >= 3) { CO.st = 'reveal'; CO.k = 0; }
+      else { $('cmsg').textContent = diagnose({ answer: CO.prob.a, tries: [v], w: CO.prob.w })[0].text + ' ¡Inténtalo otra vez!'; $('cin').select(); return; }
+    }
+  }
+  coachRender();
+}
+
+function showCoach() {
+  const log = L.log || [];
+  CO.total = log.length;
+  CO.good = log.filter(x => x.ok).length;
+  CO.list = log.filter(x => (x.tries.length || x.timeout) && GEN[x.grade] && GEN[x.grade][x.gi]);
+  CO.i = 0; CO.k = 0; CO.fixed = 0; CO.done = [];
+  CO.st = CO.list.length ? 'intro' : 'perfect';
+  Snd.unlock(); Snd.music('focus');
+  coachRender();
+  $('coach').classList.remove('hide');
+  if (CO.st === 'perfect' && CO.total) { Snd.right(); celebrate(); }
+}
+function closeCoach() {
+  $('coach').classList.add('hide');
+  if (!$('end').classList.contains('hide')) {
+    Snd.music('menu');
+    showClosing();
+  }
+}
+// Cierre del juego: escudo y nombre de la institución a pantalla completa
+function showClosing() {
+  const c = $('closing');
+  c.innerHTML = $('sello').outerHTML.replace('id="sello"', '') + '<button class="go" id="closeClosing">Continuar 🎮</button>';
+  c.classList.remove('hide');
+  Snd.win();
+  celebrate();
+  setTimeout(celebrate, 900);
+}
+// Pantalla de bienvenida: hay que tocar a Panda para entrar
+function enterGame() {
+  const w = $('welcome');
+  if (w.classList.contains('out')) return;
+  Snd.unlock();
+  Snd.voice('🐼');
+  $('wPanda').className = 'jump';
+  setTimeout(() => w.classList.add('out'), 450);
+  setTimeout(() => { w.classList.add('hide'); celebrate(); }, 1100);
+}
+$('welcome').onclick = enterGame;
+$('welcome').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); enterGame(); } });
+$('closing').onclick = e => { if (e.target.id === 'closeClosing') $('closing').classList.add('hide'); };
+$('coachBody').onclick = e => { const b = e.target.closest('[data-a]'); if (b) coachAct(b.dataset.a); };
+$('coachBody').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'cin') coachAct('check'); });
+$('coachBtn').onclick = showCoach;
+$('coach').addEventListener('click', e => { if (e.target === $('coach')) closeCoach(); });
+addEventListener('keydown', e => { if (e.key === 'Escape') closeCoach(); });
+
+// Estrellas que titilan en el fondo
+for (let k = 0; k < 45; k++) {
+  const st = document.createElement('i');
+  st.className = 'star';
+  st.style.cssText = `left:${r(0, 99)}vw;top:${r(0, 99)}vh;animation-delay:-${r(0, 30) / 10}s`;
+  document.body.appendChild(st);
+}
+
+/* ---------------------- Botones y arranque ---------------------- */
+function mkBtns(box, vals, key) {
+  vals.forEach(v => {
+    const b = document.createElement('button');
+    b.textContent = key === 'grade' ? v + '°' : v;
+    b.onclick = () => {
+      L[key] = v;
+      [...box.children].forEach(c => c.classList.remove('sel'));
+      b.classList.add('sel');
+    };
+    if (L[key] === v) b.classList.add('sel');
+    box.appendChild(b);
+  });
+}
+mkBtns($('grades'), [6, 7, 8, 9, 10, 11], 'grade');
+mkBtns($('rounds'), [5, 10, 15], 'total');
+
+$('create').onclick = createRoom;
+$('join').onclick = joinRoom;
+$('start').onclick = hostStart;
+$('send').onclick = submit;
+$('hintBtn').onclick = giveHint;
+$('again').onclick = () => { if (L.isHost) sendLobby(); };
+$('code').addEventListener('input', e => { e.target.value = e.target.value.toUpperCase(); });
+$('copyLink').onclick = () => {
+  const url = roomUrl();
+  const done = () => { Snd.pop(); $('copyLink').textContent = '¡Enlace copiado! ✅'; setTimeout(() => { $('copyLink').textContent = '🔗 Copiar enlace para invitar'; }, 2500); };
+  if (navigator.clipboard) navigator.clipboard.writeText(url).then(done, () => prompt('Copia este enlace:', url));
+  else prompt('Copia este enlace:', url);
+};
+
+/* ---------------------- Código QR de la sala ---------------------- */
+function drawQR() {
+  const box = $('qr'), wrap = $('qrbox');
+  // Solo funciona si el juego está publicado en una dirección web (no abierto como archivo)
+  if (location.protocol === 'file:' || !window.QRCode) { wrap.classList.add('hide'); return; }
+  wrap.classList.remove('hide');
+  if (box.dataset.code === L.code) return;
+  box.dataset.code = L.code;
+  box.innerHTML = '';
+  new QRCode(box, { text: roomUrl(), width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
+}
+
+/* ---------------------- Enlaces, códigos y personajes (inicio) ---------------------- */
+const roomUrl = () => location.origin + location.pathname + '?sala=' + L.code;
+
+// Saca el código de una sala desde un enlace pegado o desde el código solo
+function parseCode(txt) {
+  txt = String(txt || '').trim();
+  const m = txt.match(/sala=([A-Za-z0-9]{4})/i) || txt.match(/#([A-Za-z0-9]{4})$/);
+  if (m) return m[1].toUpperCase();
+  return /[:/.]/.test(txt) ? '' : txt.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 4);
+}
+// Pegar un enlace completo en el campo del código también funciona
+$('code').addEventListener('paste', e => {
+  e.preventDefault();
+  $('code').value = parseCode((e.clipboardData || window.clipboardData).getData('text'));
+});
+
+// Elegir personaje antes de entrar o crear
+AVATARS.forEach(([e, n]) => {
+  const b = document.createElement('button');
+  b.textContent = e;
+  b.title = n;
+  b.onclick = () => {
+    L.avatar = e;
+    Snd.voice(e);
+    [...$('homeChars').children].forEach(c => c.classList.toggle('sel', c === b));
+  };
+  if (e === L.avatar) b.classList.add('sel');
+  $('homeChars').appendChild(b);
+});
+// Elegir o cambiar personaje dentro de la sala
+$('lobbyChars').onclick = e => {
+  const b = e.target.closest('button');
+  if (b && !b.disabled) { Snd.voice(b.dataset.av); chooseAvatar(b.dataset.av); }
+};
+
+// Compartir con las apps del celular (WhatsApp, etc.) si el navegador lo permite
+if (navigator.share) {
+  $('shareLink').classList.remove('hide');
+  $('shareLink').onclick = () => navigator.share({ title: 'Duelo Matemático', text: 'Únete a mi sala con el código ' + L.code, url: roomUrl() }).catch(() => { });
+}
+
+// Si entran con un enlace como ...?sala=ABCD (o ...#ABCD), van directo a esa sala
+function inviteMode(on, code) {
+  $('invite').classList.toggle('hide', !on);
+  $('create').classList.toggle('hide', on);
+  $('orSep').classList.toggle('hide', on);
+  $('code').classList.toggle('hide', on);
+  $('ownRoom').classList.toggle('hide', !on);
+  if (on) {
+    $('code').value = code;
+    $('invite').textContent = `🎟️ ¡Te invitaron a la sala ${code}! Escribe tu nombre, elige tu personaje y toca Unirme.`;
+    $('join').textContent = '🚀 Unirme a la sala ' + code;
+  } else {
+    $('code').value = '';
+    $('join').textContent = '🚀 Unirme';
+  }
+}
+$('ownRoom').onclick = () => {
+  inviteMode(false);
+  try { history.replaceState(null, '', location.pathname); } catch (_) { }
+};
+const inv = (location.search + location.hash).match(/sala=([A-Za-z0-9]{4})|#([A-Za-z0-9]{4})$/i);
+if (inv) inviteMode(true, (inv[1] || inv[2]).toUpperCase());
+  </script>
+</body>
+</html>
